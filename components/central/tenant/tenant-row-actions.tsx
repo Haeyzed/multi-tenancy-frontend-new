@@ -1,0 +1,69 @@
+"use client"
+
+import { useQueryClient } from "@tanstack/react-query"
+import { MoreHorizontalIcon, Trash2Icon } from "lucide-react"
+import * as React from "react"
+
+import { DeleteConfirmDialog } from "@/components/central/delete-confirm-dialog"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { queryKeys } from "@/lib/central/query/keys"
+import { tenantService } from "@/services/central/tenant.service"
+import type { Tenant } from "@/types/central/tenant"
+
+interface TenantRowActionsProps {
+  tenant: Tenant
+}
+
+export function TenantRowActions({ tenant }: TenantRowActionsProps) {
+  const queryClient = useQueryClient()
+  const [deleteOpen, setDeleteOpen] = React.useState(false)
+
+  async function handleDelete() {
+    await tenantService.delete(tenant.id)
+    await queryClient.invalidateQueries({ queryKey: queryKeys.tenants.all })
+  }
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MoreHorizontalIcon className="size-4" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem>View</DropdownMenuItem>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={() => setDeleteOpen(true)}
+          >
+            <Trash2Icon />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <DeleteConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete tenant?"
+        description={
+          <>
+            This will permanently delete{" "}
+            <span className="font-medium text-foreground">{tenant.name}</span> and
+            all associated data. This action cannot be undone.
+          </>
+        }
+        onConfirm={handleDelete}
+      />
+    </>
+  )
+}
