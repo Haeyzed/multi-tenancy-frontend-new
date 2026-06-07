@@ -9,16 +9,7 @@ import {
 } from "lucide-react"
 import * as React from "react"
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+import { DeleteConfirmDialog } from "@/components/central/delete-confirm-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -161,19 +152,29 @@ export function PlanFeaturesDialog({
     },
   })
 
-  const deleteMutation = useMutation({
-    mutationFn: (featureId: number) => planFeatureService.delete(featureId),
-    onSuccess: async () => {
-      await invalidate()
-      setDeletingFeature(null)
-    },
-  })
-
   function updateForm<K extends keyof FeatureFormState>(
     key: K,
     value: FeatureFormState[K],
   ) {
     setForm((current) => ({ ...current, [key]: value }))
+  }
+
+  async function handleDeleteFeature() {
+    if (!deletingFeature) {
+      return
+    }
+
+    const featureId = deletingFeature.id
+
+    await planFeatureService.delete(featureId)
+    await invalidate()
+
+    if (editingFeature?.id === featureId) {
+      setEditingFeature(null)
+      setForm(defaultFormState)
+    }
+
+    setDeletingFeature(null)
   }
 
   function startEdit(feature: PlanFeature) {
@@ -204,33 +205,7 @@ export function PlanFeaturesDialog({
     }
   }
 
-  async function handleDeleteConfirm() {
-    if (!deletingFeature) {
-      return
-    }
-
-    const featureId = deletingFeature.id
-
-    try {
-      await deleteMutation.mutateAsync(featureId)
-
-      if (editingFeature?.id === featureId) {
-        setEditingFeature(null)
-        setForm(defaultFormState)
-      }
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorMessage(error.firstFieldError ?? error.message)
-      } else {
-        setErrorMessage("Unable to delete plan feature. Please try again.")
-      }
-
-      setDeletingFeature(null)
-    }
-  }
-
   const isSaving = saveMutation.isPending
-  const isDeleting = deleteMutation.isPending
 
   return (
     <>
@@ -421,40 +396,25 @@ export function PlanFeaturesDialog({
         </ResponsiveDialogContent>
       </ResponsiveDialog>
 
-      <AlertDialog
+      <DeleteConfirmDialog
         open={deletingFeature !== null}
         onOpenChange={(nextOpen) => {
           if (!nextOpen) {
             setDeletingFeature(null)
           }
         }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete plan feature?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will remove{" "}
-              <span className="font-mono font-medium">
-                {deletingFeature?.feature_key}
-              </span>{" "}
-              from {plan.name}. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              variant="destructive"
-              disabled={isDeleting}
-              onClick={(event) => {
-                event.preventDefault()
-                void handleDeleteConfirm()
-              }}
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        title="Delete plan feature?"
+        description={
+          <>
+            This will remove{" "}
+            <span className="font-mono font-medium text-foreground">
+              {deletingFeature?.feature_key}
+            </span>{" "}
+            from {plan.name}. This action cannot be undone.
+          </>
+        }
+        onConfirm={handleDeleteFeature}
+      />
     </>
   )
 }

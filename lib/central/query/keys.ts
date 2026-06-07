@@ -32,6 +32,28 @@ export const queryKeys = {
       [...queryKeys.plans.all, "list", params] as const,
     metrics: () => [...queryKeys.plans.all, "metrics"] as const,
   },
+  users: {
+    all: ["users"] as const,
+    list: (params: { page: number; perPage: number; search: string }) =>
+      [...queryKeys.users.all, "list", params] as const,
+    metrics: () => [...queryKeys.users.all, "metrics"] as const,
+    detail: (userId: number) =>
+      [...queryKeys.users.all, "detail", userId] as const,
+  },
+  roles: {
+    all: ["roles"] as const,
+    list: (params: { page: number; perPage: number; search: string }) =>
+      [...queryKeys.roles.all, "list", params] as const,
+    metrics: () => [...queryKeys.roles.all, "metrics"] as const,
+    permissions: (roleId: number) =>
+      [...queryKeys.roles.all, "permissions", roleId] as const,
+  },
+  permissions: {
+    all: ["permissions"] as const,
+    list: (params: { page: number; perPage: number; search: string }) =>
+      [...queryKeys.permissions.all, "list", params] as const,
+    metrics: () => [...queryKeys.permissions.all, "metrics"] as const,
+  },
   planFeatures: {
     all: ["plan-features"] as const,
     byPlan: (planId: string) =>

@@ -21,7 +21,9 @@ import {
   MapIcon,
   PieChartIcon,
   Settings2Icon,
+  ShieldIcon,
   TerminalSquareIcon,
+  UsersIcon,
 } from "lucide-react"
 
 const data = {
@@ -56,6 +58,16 @@ const data = {
       icon: <LayersIcon />,
       items: [
         { title: "All plans", url: "/central/plans" },
+      ],
+    },
+    {
+      title: "Users",
+      url: "/central/users",
+      icon: <UsersIcon />,
+      items: [
+        { title: "All users", url: "/central/users" },
+        { title: "Roles", url: "/central/roles" },
+        { title: "Permissions", url: "/central/permissions" },
       ],
     },
     {

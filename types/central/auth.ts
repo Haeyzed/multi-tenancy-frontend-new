@@ -1,12 +1,3 @@
-export const UserRoles = {
-  SuperAdmin: "super_admin",
-  Support: "support",
-  Billing: "billing",
-  Technical: "technical",
-} as const
-
-export type UserRole = (typeof UserRoles)[keyof typeof UserRoles]
-
 export const OtpPurposes = {
   PasswordReset: "password_reset",
   PasswordChange: "password_change",
@@ -20,7 +11,6 @@ export interface User {
   name: string
   email: string
   email_verified_at: string | null
-  role: UserRole
   last_login_at: string | null
   is_active: boolean
   created_at: string | null
