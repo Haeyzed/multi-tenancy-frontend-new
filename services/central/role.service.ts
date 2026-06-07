@@ -4,6 +4,8 @@ import type {
   Role,
   RoleFormPayload,
   RoleListParams,
+  RolePermissionsMatrix,
+  RolePermissionsMatrixSyncPayload,
 } from "@/types/central/role"
 
 export const roleService = {
@@ -17,6 +19,19 @@ export const roleService = {
 
   getMetrics() {
     return apiClient.get<{ cards: MetricCard[] }>("roles/metrics/cards")
+  },
+
+  getPermissionsMatrix(guard?: string) {
+    return apiClient.get<RolePermissionsMatrix>("roles/permissions/matrix", {
+      query: guard ? { guard } : undefined,
+    })
+  },
+
+  syncPermissionsMatrix(payload: RolePermissionsMatrixSyncPayload) {
+    return apiClient.put<RolePermissionsMatrix>(
+      "roles/permissions/matrix",
+      payload,
+    )
   },
 
   create(payload: RoleFormPayload) {

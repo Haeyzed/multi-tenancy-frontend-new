@@ -74,11 +74,13 @@ export function DeleteConfirmDialog({
         ) : null}
 
         <ResponsiveDialogFooter>
-          <ResponsiveDialogClose asChild>
-            <Button variant="outline" disabled={isDeleting}>
-              Cancel
-            </Button>
-          </ResponsiveDialogClose>
+          <ResponsiveDialogClose
+            render={
+              <Button variant="outline" disabled={isDeleting}>
+                Cancel
+              </Button>
+            }
+          />
           <Button
             variant="destructive"
             onClick={() => void handleConfirm()}

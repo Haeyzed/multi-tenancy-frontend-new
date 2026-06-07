@@ -21,4 +21,37 @@ export interface RoleListParams {
   search?: string
 }
 
+export interface RoleMatrixPermission {
+  id: number
+  name: string
+  guard_name: string
+}
+
+export interface RoleMatrixPermissionGroup {
+  module: string
+  permissions: RoleMatrixPermission[]
+}
+
+export interface RoleMatrixRole {
+  id: number
+  name: string
+  guard_name: string
+  permission_ids: number[]
+  is_system: boolean
+}
+
+export interface RolePermissionsMatrix {
+  guard_name: string
+  total_permissions: number
+  roles: RoleMatrixRole[]
+  permission_groups: RoleMatrixPermissionGroup[]
+}
+
+export interface RolePermissionsMatrixSyncPayload {
+  roles: Array<{
+    role_id: number
+    permission_ids: number[]
+  }>
+}
+
 export type { MetricCard }

@@ -31,6 +31,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import { ApiError } from "@/lib/central/api/errors"
 import { queryKeys } from "@/lib/central/query/keys"
+import { getGroupCheckboxProps } from "@/lib/data-table/checkbox-utils"
 import { permissionService } from "@/services/central/permission.service"
 import { roleService } from "@/services/central/role.service"
 import { userService } from "@/services/central/user.service"
@@ -363,18 +364,15 @@ export function UserFormDialog({ user, open, onOpenChange }: UserFormDialogProps
                     const selectedCount = moduleIds.filter((id) =>
                       form.permissionIds.includes(id),
                     ).length
-                    const allSelected =
-                      moduleIds.length > 0 && selectedCount === moduleIds.length
-                    const someSelected =
-                      selectedCount > 0 && selectedCount < moduleIds.length
 
                     return (
                       <div key={module} className="flex flex-col gap-3">
                         <div className="flex items-center gap-2">
                           <Checkbox
-                            checked={
-                              someSelected ? "indeterminate" : allSelected
-                            }
+                            {...getGroupCheckboxProps(
+                              selectedCount,
+                              moduleIds.length,
+                            )}
                             onCheckedChange={(checked) =>
                               toggleModule(modulePermissions, checked === true)
                             }

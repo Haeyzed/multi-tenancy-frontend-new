@@ -17,6 +17,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { TenantRowActions } from "@/components/central/tenant/tenant-row-actions"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { getSelectAllCheckboxProps } from "@/lib/data-table/checkbox-utils"
 import { TenantStatuses, type Tenant, type TenantStatus } from "@/types/central/tenant"
 
 const statusConfig: Record<
@@ -35,10 +36,7 @@ export function getTenantColumns(): ColumnDef<Tenant>[] {
       id: "select",
       header: ({ table }) => (
         <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
+          {...getSelectAllCheckboxProps(table)}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />

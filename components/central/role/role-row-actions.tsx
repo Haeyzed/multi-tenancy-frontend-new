@@ -1,11 +1,10 @@
 "use client"
 
 import { useQueryClient } from "@tanstack/react-query"
-import { KeyRoundIcon, MoreHorizontalIcon, PencilIcon, Trash2Icon } from "lucide-react"
+import { MoreHorizontalIcon, PencilIcon, Trash2Icon } from "lucide-react"
 import * as React from "react"
 
 import { DeleteConfirmDialog } from "@/components/central/delete-confirm-dialog"
-import { RolePermissionsDialog } from "@/components/central/role/role-permissions-dialog"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -24,47 +23,37 @@ interface RoleRowActionsProps {
 
 export function RoleRowActions({ role, onEdit }: RoleRowActionsProps) {
   const queryClient = useQueryClient()
-  const [permissionsOpen, setPermissionsOpen] = React.useState(false)
   const [deleteOpen, setDeleteOpen] = React.useState(false)
 
   async function handleDelete() {
     await roleService.delete(role.id)
     await queryClient.invalidateQueries({ queryKey: queryKeys.roles.all })
   }
-
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreHorizontalIcon className="size-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="icon">
+              <MoreHorizontalIcon className="size-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          }
+        />
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => onEdit(role)}>
+          <DropdownMenuItem onClick={() => onEdit(role)}>
             <PencilIcon />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setPermissionsOpen(true)}>
-            <KeyRoundIcon />
-            Manage permissions
-          </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            onSelect={() => setDeleteOpen(true)}
+            onClick={() => setDeleteOpen(true)}
           >
             <Trash2Icon />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <RolePermissionsDialog
-        role={role}
-        open={permissionsOpen}
-        onOpenChange={setPermissionsOpen}
-      />
 
       <DeleteConfirmDialog
         open={deleteOpen}

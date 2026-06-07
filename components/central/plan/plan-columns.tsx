@@ -15,6 +15,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { PlanRowActions } from "@/components/central/plan/plan-row-actions"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { getSelectAllCheckboxProps } from "@/lib/data-table/checkbox-utils"
 import type { Plan } from "@/types/central/plan"
 
 function formatPrice(amountMinor: number, currency: string) {
@@ -37,10 +38,7 @@ export function getPlanColumns({
       id: "select",
       header: ({ table }) => (
         <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
+          {...getSelectAllCheckboxProps(table)}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />

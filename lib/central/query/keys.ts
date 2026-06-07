@@ -45,6 +45,8 @@ export const queryKeys = {
     list: (params: { page: number; perPage: number; search: string }) =>
       [...queryKeys.roles.all, "list", params] as const,
     metrics: () => [...queryKeys.roles.all, "metrics"] as const,
+    permissionsMatrix: (guard?: string) =>
+      [...queryKeys.roles.all, "permissions-matrix", guard ?? "web"] as const,
     permissions: (roleId: number) =>
       [...queryKeys.roles.all, "permissions", roleId] as const,
   },

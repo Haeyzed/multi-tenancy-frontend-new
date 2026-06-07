@@ -39,22 +39,24 @@ export function SubscriptionRowActions({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreHorizontalIcon className="size-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="icon">
+              <MoreHorizontalIcon className="size-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          }
+        />
         <DropdownMenuContent align="end">
           <DropdownMenuItem>View</DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setInvoicesOpen(true)}>
+          <DropdownMenuItem onClick={() => setInvoicesOpen(true)}>
             <FileTextIcon />
             View invoices
           </DropdownMenuItem>
           <DropdownMenuItem>Cancel</DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            onSelect={() => setDeleteOpen(true)}
+            onClick={() => setDeleteOpen(true)}
           >
             <Trash2Icon />
             Delete

@@ -2,8 +2,7 @@
 
 import * as React from "react"
 
-import { NavMain } from "@/components/central/nav-main"
-import { NavProjects } from "@/components/central/nav-projects"
+import { NavMain, type NavMainItem } from "@/components/central/nav-main"
 import { NavUser } from "@/components/central/nav-user"
 import { TenantSwitcher } from "@/components/central/tenant-switcher"
 import {
@@ -14,111 +13,51 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import {
-  BookOpenIcon,
-  BotIcon,
-  FrameIcon,
-  LayersIcon,
-  MapIcon,
+  Building2Icon,
+  CreditCardIcon,
+  LayoutDashboardIcon,
   MegaphoneIcon,
-  PieChartIcon,
-  Settings2Icon,
   ShieldIcon,
-  TerminalSquareIcon,
-  UsersIcon,
 } from "lucide-react"
 
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/central/dashboard",
-      icon: <TerminalSquareIcon />,
-      isActive: true,
-      items: [],
-    },
-    {
-      title: "Tenants",
-      url: "/central/tenants",
-      icon: <BotIcon />,
-      items: [
-        { title: "All tenants", url: "/central/tenants" },
-        { title: "Onboarding", url: "#" },
-      ],
-    },
-    {
-      title: "Subscriptions",
-      url: "/central/subscriptions",
-      icon: <FrameIcon />,
-      items: [
-        { title: "All subscriptions", url: "/central/subscriptions" },
-      ],
-    },
-    {
-      title: "Plans",
-      url: "/central/plans",
-      icon: <LayersIcon />,
-      items: [
-        { title: "All plans", url: "/central/plans" },
-      ],
-    },
-    {
-      title: "Users",
-      url: "/central/users",
-      icon: <UsersIcon />,
-      items: [
-        { title: "All users", url: "/central/users" },
-        { title: "Roles", url: "/central/roles" },
-        { title: "Permissions", url: "/central/permissions" },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: <BookOpenIcon />,
-      items: [
-        { title: "Introduction", url: "#" },
-        { title: "Get Started", url: "#" },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: <Settings2Icon />,
-      items: [
-        { title: "General", url: "#" },
-        { title: "Billing", url: "#" },
-        { title: "Announcements", url: "/central/announcements" },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Plans",
-      url: "/central/plans",
-      icon: <LayersIcon />,
-    },
-    {
-      name: "Subscriptions",
-      url: "/central/subscriptions",
-      icon: <FrameIcon />,
-    },
-    {
-      name: "Invoices",
-      url: "#",
-      icon: <PieChartIcon />,
-    },
-    {
-      name: "Announcements",
-      url: "/central/announcements",
-      icon: <MegaphoneIcon />,
-    },
-    {
-      name: "Support",
-      url: "#",
-      icon: <MapIcon />,
-    },
-  ],
-}
+const navItems: NavMainItem[] = [
+  {
+    title: "Dashboard",
+    url: "/central/dashboard",
+    icon: <LayoutDashboardIcon />,
+  },
+  {
+    title: "Tenants",
+    url: "/central/tenants",
+    icon: <Building2Icon />,
+    items: [{ title: "Tenants", url: "/central/tenants" }],
+  },
+  {
+    title: "Billing",
+    url: "/central/plans",
+    icon: <CreditCardIcon />,
+    items: [
+      { title: "Plans", url: "/central/plans" },
+      { title: "Subscriptions", url: "/central/subscriptions" },
+    ],
+  },
+  {
+    title: "Access control",
+    url: "/central/users",
+    icon: <ShieldIcon />,
+    items: [
+      { title: "Users", url: "/central/users" },
+      { title: "Roles", url: "/central/roles" },
+      { title: "Permissions", url: "/central/permissions" },
+    ],
+  },
+  {
+    title: "Platform",
+    url: "/central/announcements",
+    icon: <MegaphoneIcon />,
+    items: [{ title: "Announcements", url: "/central/announcements" }],
+  },
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -127,8 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <TenantSwitcher />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavMain items={navItems} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

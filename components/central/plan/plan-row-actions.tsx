@@ -35,24 +35,26 @@ export function PlanRowActions({ plan, onEdit }: PlanRowActionsProps) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreHorizontalIcon className="size-4" />
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger
+          render={
+            <Button variant="ghost" size="icon">
+              <MoreHorizontalIcon className="size-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          }
+        />
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => onEdit(plan)}>
+          <DropdownMenuItem onClick={() => onEdit(plan)}>
             <PencilIcon />
             Edit plan
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setFeaturesOpen(true)}>
+          <DropdownMenuItem onClick={() => setFeaturesOpen(true)}>
             <ListChecksIcon />
             Manage features
           </DropdownMenuItem>
           <DropdownMenuItem
             variant="destructive"
-            onSelect={() => setDeleteOpen(true)}
+            onClick={() => setDeleteOpen(true)}
           >
             <Trash2Icon />
             Delete

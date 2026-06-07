@@ -9,6 +9,7 @@ import { RoleRowActions } from "@/components/central/role/role-row-actions"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { getSelectAllCheckboxProps } from "@/lib/data-table/checkbox-utils"
 import type { Role } from "@/types/central/role"
 
 function formatDate(value: string | null) {
@@ -31,10 +32,7 @@ export function getRoleColumns({
       id: "select",
       header: ({ table }) => (
         <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
+          {...getSelectAllCheckboxProps(table)}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />

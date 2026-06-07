@@ -9,6 +9,7 @@ import { PermissionRowActions } from "@/components/central/permission/permission
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
+import { getSelectAllCheckboxProps } from "@/lib/data-table/checkbox-utils"
 import type { Permission } from "@/types/central/permission"
 
 function formatDate(value: string | null) {
@@ -31,10 +32,7 @@ export function getPermissionColumns({
       id: "select",
       header: ({ table }) => (
         <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
+          {...getSelectAllCheckboxProps(table)}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
