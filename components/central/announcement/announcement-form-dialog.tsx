@@ -27,13 +27,7 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { OptionsCombobox } from "@/components/central/form/options-combobox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
@@ -68,12 +62,12 @@ export function AnnouncementFormDialog({
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
 
   const plansQuery = useQuery({
-    queryKey: [...queryKeys.plans.all, "all-options"],
-    queryFn: () => planService.getPaginated({ per_page: 500 }),
+    queryKey: queryKeys.plans.options(),
+    queryFn: () => planService.getOptions(),
     enabled: open,
   })
 
-  const plans = plansQuery.data?.data ?? []
+  const plans = plansQuery.data ?? []
 
   React.useEffect(() => {
     if (open) {
@@ -143,6 +137,24 @@ export function AnnouncementFormDialog({
   const showPlanSelection =
     form.targetAudience === AnnouncementTargetAudiences.PlanSpecific
 
+  const typeOptions = React.useMemo(
+    () =>
+      Object.values(AnnouncementTypes).map((type) => ({
+        value: type,
+        label: announcementTypeLabels[type],
+      })),
+    [],
+  )
+
+  const audienceOptions = React.useMemo(
+    () =>
+      Object.values(AnnouncementTargetAudiences).map((audience) => ({
+        value: audience,
+        label: announcementTargetAudienceLabels[audience],
+      })),
+    [],
+  )
+
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent className="max-h-[90vh] overflow-hidden sm:max-w-2xl">
@@ -192,27 +204,21 @@ export function AnnouncementFormDialog({
             </Field>
             <Field>
               <FieldLabel htmlFor="announcement-type">Type</FieldLabel>
-              <Select
+              <OptionsCombobox
+                id="announcement-type"
+                items={typeOptions}
                 value={form.type}
                 onValueChange={(value) =>
                   updateField("type", value as AnnouncementFormState["type"])
                 }
-              >
-                <SelectTrigger id="announcement-type" className="w-full">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(AnnouncementTypes).map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {announcementTypeLabels[type]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Select type"
+              />
             </Field>
             <Field>
               <FieldLabel htmlFor="announcement-audience">Audience</FieldLabel>
-              <Select
+              <OptionsCombobox
+                id="announcement-audience"
+                items={audienceOptions}
                 value={form.targetAudience}
                 onValueChange={(value) =>
                   updateField(
@@ -220,18 +226,8 @@ export function AnnouncementFormDialog({
                     value as AnnouncementFormState["targetAudience"],
                   )
                 }
-              >
-                <SelectTrigger id="announcement-audience" className="w-full">
-                  <SelectValue placeholder="Select audience" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.values(AnnouncementTargetAudiences).map((audience) => (
-                    <SelectItem key={audience} value={audience}>
-                      {announcementTargetAudienceLabels[audience]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                placeholder="Select audience"
+              />
             </Field>
 
             {showPlanSelection ? (
@@ -256,19 +252,16 @@ export function AnnouncementFormDialog({
                     <div className="flex flex-col gap-2 p-3">
                       {plans.map((plan) => (
                         <label
-                          key={plan.id}
+                          key={plan.value}
                           className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted/50"
                         >
                           <Checkbox
-                            checked={form.targetPlanSlugs.includes(plan.slug)}
+                            checked={form.targetPlanSlugs.includes(plan.value)}
                             onCheckedChange={(checked) =>
-                              togglePlanSlug(plan.slug, checked === true)
+                              togglePlanSlug(plan.value, checked === true)
                             }
                           />
-                          <span>{plan.name}</span>
-                          <span className="font-mono text-xs text-muted-foreground">
-                            {plan.slug}
-                          </span>
+                          <span>{plan.label}</span>
                         </label>
                       ))}
                     </div>

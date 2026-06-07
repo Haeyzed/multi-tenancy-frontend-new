@@ -3,6 +3,10 @@ export const queryKeys = {
     all: ["auth"] as const,
     me: () => [...queryKeys.auth.all, "me"] as const,
   },
+  dashboard: {
+    all: ["dashboard"] as const,
+    overview: () => [...queryKeys.dashboard.all, "overview"] as const,
+  },
   tenants: {
     all: ["tenants"] as const,
     options: () => [...queryKeys.tenants.all, "options"] as const,
@@ -28,6 +32,7 @@ export const queryKeys = {
   },
   plans: {
     all: ["plans"] as const,
+    options: () => [...queryKeys.plans.all, "options"] as const,
     list: (params: { page: number; perPage: number; search: string }) =>
       [...queryKeys.plans.all, "list", params] as const,
     metrics: () => [...queryKeys.plans.all, "metrics"] as const,

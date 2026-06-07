@@ -23,9 +23,11 @@ export interface NavMainItem {
   title: string
   url: string
   icon?: React.ReactNode
+  permission?: string | null
   items?: {
     title: string
     url: string
+    permission?: string | null
   }[]
 }
 

@@ -27,4 +27,8 @@ export const announcementService = {
   delete(id: number) {
     return apiClient.delete<void>(`announcements/${id}`)
   },
+
+  bulkDelete(ids: number[]) {
+    return apiClient.bulkDelete<{ deleted: number }>("announcements/bulk", ids)
+  },
 }

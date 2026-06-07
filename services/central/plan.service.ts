@@ -1,4 +1,5 @@
 import { apiClient, apiPaginatedRequest } from "@/lib/central/api/client"
+import type { SelectOption } from "@/types/central/api"
 import type {
   MetricCard,
   Plan,
@@ -9,6 +10,10 @@ import type {
 export const planService = {
   getPaginated(params: PlanListParams = {}) {
     return apiPaginatedRequest<Plan[]>("plans", { query: params })
+  },
+
+  getOptions() {
+    return apiClient.get<SelectOption[]>("plans/options/list")
   },
 
   getMetrics() {
@@ -25,5 +30,9 @@ export const planService = {
 
   delete(id: string) {
     return apiClient.delete<void>(`plans/${id}`)
+  },
+
+  bulkDelete(ids: string[]) {
+    return apiClient.bulkDelete<{ deleted: number }>("plans/bulk", ids)
   },
 }

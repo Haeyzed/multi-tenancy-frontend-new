@@ -3,12 +3,14 @@
 import { KeyRoundIcon, PlusIcon } from "lucide-react"
 import * as React from "react"
 
+import { Can } from "@/components/central/can"
 import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
 import { RoleFormDialog } from "@/components/central/role/role-form-dialog"
 import { RoleMetricCards } from "@/components/central/role/role-metric-cards"
 import { RolePermissionsMatrixDialog } from "@/components/central/role/role-permissions-matrix-dialog"
 import { RolesDataTable } from "@/components/central/role/roles-data-table"
 import { Button } from "@/components/ui/button"
+import { Permissions } from "@/lib/central/auth/permissions"
 import type { Role } from "@/types/central/role"
 
 export function RolesPageContent() {
@@ -43,14 +45,18 @@ export function RolesPageContent() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => setMatrixDialogOpen(true)}>
-              <KeyRoundIcon />
-              Manage permissions
-            </Button>
-            <Button onClick={openCreate}>
-              <PlusIcon />
-              Create role
-            </Button>
+            <Can permission={Permissions.roles.update}>
+              <Button variant="outline" onClick={() => setMatrixDialogOpen(true)}>
+                <KeyRoundIcon />
+                Manage permissions
+              </Button>
+            </Can>
+            <Can permission={Permissions.roles.create}>
+              <Button onClick={openCreate}>
+                <PlusIcon />
+                Create role
+              </Button>
+            </Can>
           </div>
         </div>
       </div>

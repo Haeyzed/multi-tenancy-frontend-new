@@ -26,4 +26,8 @@ export const permissionService = {
   delete(id: number) {
     return apiClient.delete<void>(`permissions/${id}`)
   },
+
+  bulkDelete(ids: number[]) {
+    return apiClient.bulkDelete<{ deleted: number }>("permissions/bulk", ids)
+  },
 }

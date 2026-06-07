@@ -1,3 +1,5 @@
+export { usePermissions } from "@/hooks/use-permissions"
+
 export {
   useAuth,
   useChangePassword,

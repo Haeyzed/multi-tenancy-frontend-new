@@ -31,6 +31,10 @@ export const userService = {
     return apiClient.delete<void>(`users/${id}`)
   },
 
+  bulkDelete(ids: number[]) {
+    return apiClient.bulkDelete<{ deleted: number }>("users/bulk", ids)
+  },
+
   syncRoles(id: number, roleIds: number[]) {
     return apiClient.put<User>(`users/${id}/roles`, {
       role_ids: roleIds,

@@ -46,6 +46,10 @@ export const roleService = {
     return apiClient.delete<void>(`roles/${id}`)
   },
 
+  bulkDelete(ids: number[]) {
+    return apiClient.bulkDelete<{ deleted: number }>("roles/bulk", ids)
+  },
+
   syncPermissions(id: number, permissionIds: number[]) {
     return apiClient.put<Role>(`roles/${id}/permissions`, {
       permission_ids: permissionIds,

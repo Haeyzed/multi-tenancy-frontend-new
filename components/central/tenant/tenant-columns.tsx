@@ -30,7 +30,11 @@ const statusConfig: Record<
   [TenantStatuses.Cancelled]: { label: "Cancelled", icon: BanIcon },
 }
 
-export function getTenantColumns(): ColumnDef<Tenant>[] {
+export function getTenantColumns({
+  onEdit,
+}: {
+  onEdit: (tenant: Tenant) => void
+}): ColumnDef<Tenant>[] {
   return [
     {
       id: "select",
@@ -143,7 +147,9 @@ export function getTenantColumns(): ColumnDef<Tenant>[] {
     },
     {
       id: "actions",
-      cell: ({ row }) => <TenantRowActions tenant={row.original} />,
+      cell: ({ row }) => (
+        <TenantRowActions tenant={row.original} onEdit={onEdit} />
+      ),
       size: 32,
       enableSorting: false,
       enableHiding: false,
@@ -152,6 +158,6 @@ export function getTenantColumns(): ColumnDef<Tenant>[] {
   ]
 }
 
-export function useTenantColumns() {
-  return React.useMemo(() => getTenantColumns(), [])
+export function useTenantColumns(onEdit: (tenant: Tenant) => void) {
+  return React.useMemo(() => getTenantColumns({ onEdit }), [onEdit])
 }

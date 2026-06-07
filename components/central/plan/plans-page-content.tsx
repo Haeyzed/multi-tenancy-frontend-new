@@ -6,8 +6,10 @@ import * as React from "react"
 import { PlanFormDialog } from "@/components/central/plan/plan-form-dialog"
 import { PlanMetricCards } from "@/components/central/plan/plan-metric-cards"
 import { PlansDataTable } from "@/components/central/plan/plans-data-table"
+import { Can } from "@/components/central/can"
 import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
 import { Button } from "@/components/ui/button"
+import { Permissions } from "@/lib/central/auth/permissions"
 import type { Plan } from "@/types/central/plan"
 
 export function PlansPageContent() {
@@ -40,10 +42,12 @@ export function PlansPageContent() {
               Manage subscription plans, pricing tiers, and enforceable features.
             </p>
           </div>
-          <Button onClick={openCreate}>
-            <PlusIcon />
-            Create plan
-          </Button>
+          <Can permission={Permissions.billing.manage}>
+            <Button onClick={openCreate}>
+              <PlusIcon />
+              Create plan
+            </Button>
+          </Can>
         </div>
       </div>
 

@@ -1,7 +1,15 @@
 import Link from "next/link"
 import { GalleryVerticalEndIcon } from "lucide-react"
 
-export function AuthShell({ children }: { children: React.ReactNode }) {
+import { cn } from "@/lib/utils"
+
+export function AuthShell({
+  children,
+  contentClassName,
+}: {
+  children: React.ReactNode
+  contentClassName?: string
+}) {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -14,7 +22,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-sm">{children}</div>
+          <div className={cn("w-full max-w-sm", contentClassName)}>{children}</div>
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">

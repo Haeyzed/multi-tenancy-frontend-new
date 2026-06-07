@@ -22,4 +22,8 @@ export const subscriptionService = {
   delete(id: string) {
     return apiClient.delete<void>(`subscriptions/${id}`)
   },
+
+  bulkDelete(ids: string[]) {
+    return apiClient.bulkDelete<{ deleted: number }>("subscriptions/bulk", ids)
+  },
 }

@@ -3,10 +3,12 @@
 import { PlusIcon } from "lucide-react"
 import * as React from "react"
 
+import { Can } from "@/components/central/can"
 import { AnnouncementFormDialog } from "@/components/central/announcement/announcement-form-dialog"
 import { AnnouncementsDataTable } from "@/components/central/announcement/announcements-data-table"
 import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
 import { Button } from "@/components/ui/button"
+import { Permissions } from "@/lib/central/auth/permissions"
 import type { PlatformAnnouncement } from "@/types/central/announcement"
 
 export function AnnouncementsPageContent() {
@@ -40,10 +42,12 @@ export function AnnouncementsPageContent() {
               Create and manage platform-wide messages for tenants and admins.
             </p>
           </div>
-          <Button onClick={openCreate}>
-            <PlusIcon />
-            Create announcement
-          </Button>
+          <Can permission={Permissions.platform.manage}>
+            <Button onClick={openCreate}>
+              <PlusIcon />
+              Create announcement
+            </Button>
+          </Can>
         </div>
       </div>
 

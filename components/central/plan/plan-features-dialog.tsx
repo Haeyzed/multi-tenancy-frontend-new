@@ -26,13 +26,7 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { OptionsCombobox } from "@/components/central/form/options-combobox"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
@@ -71,6 +65,16 @@ const defaultFormState: FeatureFormState = {
   featureValue: "",
   featureType: FeatureTypes.Integer,
 }
+
+const featureTypeOptions = Object.values(FeatureTypes).map((type) => ({
+  value: type,
+  label: featureTypeLabels[type],
+}))
+
+const booleanFeatureValueOptions = [
+  { value: "true", label: "true" },
+  { value: "false", label: "false" },
+]
 
 function featureToFormState(feature: PlanFeature): FeatureFormState {
   return {
@@ -257,41 +261,28 @@ export function PlanFeaturesDialog({
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="feature-type">Type</FieldLabel>
-                  <Select
+                  <OptionsCombobox
+                    id="feature-type"
+                    items={featureTypeOptions}
                     value={form.featureType}
                     onValueChange={(value) =>
                       updateForm("featureType", value as FeatureType)
                     }
-                  >
-                    <SelectTrigger id="feature-type" className="w-full">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(FeatureTypes).map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {featureTypeLabels[type]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    placeholder="Select type"
+                  />
                 </Field>
               </div>
 
               <Field>
                 <FieldLabel htmlFor="feature-value">Value</FieldLabel>
                 {form.featureType === FeatureTypes.Boolean ? (
-                  <Select
+                  <OptionsCombobox
+                    id="feature-value"
+                    items={booleanFeatureValueOptions}
                     value={form.featureValue}
                     onValueChange={(value) => updateForm("featureValue", value)}
-                  >
-                    <SelectTrigger id="feature-value" className="w-full">
-                      <SelectValue placeholder="Select value" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">true</SelectItem>
-                      <SelectItem value="false">false</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    placeholder="Select value"
+                  />
                 ) : (
                   <Input
                     id="feature-value"

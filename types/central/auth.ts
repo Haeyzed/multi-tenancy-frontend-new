@@ -16,6 +16,9 @@ export interface User {
   created_at: string | null
   updated_at: string | null
   deleted_at: string | null
+  role_names?: string[]
+  permission_names?: string[]
+  is_super_admin?: boolean
 }
 
 export interface LoginCredentials {

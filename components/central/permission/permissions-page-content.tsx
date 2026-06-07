@@ -3,11 +3,13 @@
 import { PlusIcon } from "lucide-react"
 import * as React from "react"
 
+import { Can } from "@/components/central/can"
 import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
 import { PermissionFormDialog } from "@/components/central/permission/permission-form-dialog"
 import { PermissionMetricCards } from "@/components/central/permission/permission-metric-cards"
 import { PermissionsDataTable } from "@/components/central/permission/permissions-data-table"
 import { Button } from "@/components/ui/button"
+import { Permissions } from "@/lib/central/auth/permissions"
 import type { Permission } from "@/types/central/permission"
 
 export function PermissionsPageContent() {
@@ -41,10 +43,12 @@ export function PermissionsPageContent() {
               Manage Spatie permissions grouped by functional modules.
             </p>
           </div>
-          <Button onClick={openCreate}>
-            <PlusIcon />
-            Create permission
-          </Button>
+          <Can permission={Permissions.permissions.create}>
+            <Button onClick={openCreate}>
+              <PlusIcon />
+              Create permission
+            </Button>
+          </Can>
         </div>
       </div>
 

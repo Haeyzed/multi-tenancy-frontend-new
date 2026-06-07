@@ -5,6 +5,7 @@ import * as React from "react"
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -79,44 +80,48 @@ export function TenantSwitcher() {
             side={isMobile ? "bottom" : "right"}
             sideOffset={4}
           >
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Tenants
-            </DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => selectTenant(null)}
-              className="gap-2 p-2"
-            >
-              <div className="flex size-6 items-center justify-center rounded-md border">
-                <GlobeIcon className="size-3.5" />
-              </div>
-              <span className={selectedTenantId === null ? "font-medium" : ""}>
-                All tenants
-              </span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            {tenants.map((tenant) => (
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="text-xs text-muted-foreground">
+                Tenants
+              </DropdownMenuLabel>
               <DropdownMenuItem
-                key={tenant.value}
-                onClick={() => selectTenant(tenant.value)}
+                onClick={() => selectTenant(null)}
                 className="gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-md border text-[10px] font-semibold uppercase">
-                  {tenant.label.slice(0, 2)}
+                <div className="flex size-6 items-center justify-center rounded-md border">
+                  <GlobeIcon className="size-3.5" />
                 </div>
-                <span
-                  className={
-                    tenant.value === selectedTenantId ? "font-medium" : ""
-                  }
-                >
-                  {tenant.label}
+                <span className={selectedTenantId === null ? "font-medium" : ""}>
+                  All tenants
                 </span>
               </DropdownMenuItem>
-            ))}
-            {tenants.length === 0 ? (
-              <DropdownMenuItem disabled className="p-2 text-muted-foreground">
-                No active tenants found.
-              </DropdownMenuItem>
-            ) : null}
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              {tenants.map((tenant) => (
+                <DropdownMenuItem
+                  key={tenant.value}
+                  onClick={() => selectTenant(tenant.value)}
+                  className="gap-2 p-2"
+                >
+                  <div className="flex size-6 items-center justify-center rounded-md border text-[10px] font-semibold uppercase">
+                    {tenant.label.slice(0, 2)}
+                  </div>
+                  <span
+                    className={
+                      tenant.value === selectedTenantId ? "font-medium" : ""
+                    }
+                  >
+                    {tenant.label}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+              {tenants.length === 0 ? (
+                <DropdownMenuItem disabled className="p-2 text-muted-foreground">
+                  No active tenants found.
+                </DropdownMenuItem>
+              ) : null}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

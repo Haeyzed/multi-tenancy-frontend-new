@@ -202,4 +202,10 @@ export const apiClient = {
     apiRequest<T>(path, { ...options, method: "PATCH", body }),
   delete: <T>(path: string, options?: ApiRequestOptions) =>
     apiRequest<T>(path, { ...options, method: "DELETE" }),
+  bulkDelete: <T>(path: string, ids: Array<string | number>, options?: ApiRequestOptions) =>
+    apiRequest<T>(path, {
+      ...options,
+      method: "DELETE",
+      body: { ids },
+    }),
 }

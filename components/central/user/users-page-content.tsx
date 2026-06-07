@@ -3,11 +3,13 @@
 import { PlusIcon } from "lucide-react"
 import * as React from "react"
 
+import { Can } from "@/components/central/can"
 import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
 import { UserFormDialog } from "@/components/central/user/user-form-dialog"
 import { UserMetricCards } from "@/components/central/user/user-metric-cards"
 import { UsersDataTable } from "@/components/central/user/users-data-table"
 import { Button } from "@/components/ui/button"
+import { Permissions } from "@/lib/central/auth/permissions"
 import type { User } from "@/types/central/user"
 
 export function UsersPageContent() {
@@ -40,10 +42,12 @@ export function UsersPageContent() {
               Manage platform administrators, roles, and permissions.
             </p>
           </div>
-          <Button onClick={openCreate}>
-            <PlusIcon />
-            Create user
-          </Button>
+          <Can permission={Permissions.users.create}>
+            <Button onClick={openCreate}>
+              <PlusIcon />
+              Create user
+            </Button>
+          </Can>
         </div>
       </div>
 

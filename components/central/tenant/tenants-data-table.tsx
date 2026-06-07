@@ -12,11 +12,16 @@ import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
 import { queryKeys } from "@/lib/central/query/keys"
 import { tenantService } from "@/services/central/tenant.service"
+import type { Tenant } from "@/types/central/tenant"
 import { useTenant } from "@/providers/central/tenant-provider"
 
-export function TenantsDataTable() {
+export function TenantsDataTable({
+  onEdit,
+}: {
+  onEdit: (tenant: Tenant) => void
+}) {
   const { selectedTenantId } = useTenant()
-  const columns = React.useMemo(() => getTenantColumns(), [])
+  const columns = React.useMemo(() => getTenantColumns({ onEdit }), [onEdit])
 
   const [page] = useQueryState("page", parseAsInteger.withDefault(1))
   const [perPage] = useQueryState("perPage", parseAsInteger.withDefault(10))
