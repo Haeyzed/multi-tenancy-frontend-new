@@ -127,3 +127,9 @@
     @apply font-sans;
     }
 }
+
+@layer components {
+  .data-table-container {
+    @apply min-w-0 w-full max-w-full;
+  }
+}

@@ -45,7 +45,7 @@ export function SubscriptionsDataTable() {
     columns,
     pageCount,
     initialState: {
-      columnPinning: { right: ["actions"] },
+      columnPinning: { left: ["select", "tenant"], right: ["actions"] },
     },
     getRowId: (row) => row.id,
   })

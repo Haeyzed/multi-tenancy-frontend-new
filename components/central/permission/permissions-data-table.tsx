@@ -43,7 +43,7 @@ export function PermissionsDataTable({ onEdit }: PermissionsDataTableProps) {
     columns,
     pageCount,
     initialState: {
-      columnPinning: { right: ["actions"] },
+      columnPinning: { left: ["select", "name"], right: ["actions"] },
     },
     getRowId: (row) => String(row.id),
   })

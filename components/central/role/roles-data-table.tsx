@@ -43,7 +43,7 @@ export function RolesDataTable({ onEdit }: RolesDataTableProps) {
     columns,
     pageCount,
     initialState: {
-      columnPinning: { right: ["actions"] },
+      columnPinning: { left: ["select", "name"], right: ["actions"] },
     },
     getRowId: (row) => String(row.id),
   })

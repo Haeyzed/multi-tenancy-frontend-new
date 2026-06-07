@@ -27,12 +27,12 @@ export function DataTable<TData>({
 }: DataTableProps<TData>) {
   return (
     <div
-      className={cn("flex w-full flex-col gap-2.5 overflow-auto", className)}
+      className={cn("flex w-full min-w-0 flex-col gap-2.5", className)}
       {...props}
     >
       {children}
-      <div className="overflow-hidden rounded-md border">
-        <Table>
+      <div className="overflow-x-auto rounded-md border">
+        <Table className="border-separate border-spacing-0 [&_td]:border-b [&_th]:border-b [&_tbody_tr:last-child>td]:border-b-0">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -40,8 +40,15 @@ export function DataTable<TData>({
                   <TableHead
                     key={header.id}
                     colSpan={header.colSpan}
+                    className={cn(
+                      header.column.getIsPinned() && "z-10 bg-background",
+                    )}
                     style={{
-                      ...getColumnPinningStyle({ column: header.column }),
+                      ...getColumnPinningStyle({
+                        column: header.column,
+                        withBorder: true,
+                      }),
+                      ...(header.column.getIsPinned() ? { zIndex: 2 } : {}),
                     }}
                   >
                     {header.isPlaceholder
@@ -65,8 +72,14 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
+                      className={cn(
+                        cell.column.getIsPinned() && "bg-background",
+                      )}
                       style={{
-                        ...getColumnPinningStyle({ column: cell.column }),
+                        ...getColumnPinningStyle({
+                          column: cell.column,
+                          withBorder: true,
+                        }),
                       }}
                     >
                       {flexRender(

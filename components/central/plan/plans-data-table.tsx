@@ -43,7 +43,7 @@ export function PlansDataTable({ onEdit }: PlansDataTableProps) {
     columns,
     pageCount,
     initialState: {
-      columnPinning: { right: ["actions"] },
+      columnPinning: { left: ["select", "name"], right: ["actions"] },
     },
     getRowId: (row) => row.id,
   })

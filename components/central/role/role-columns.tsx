@@ -49,6 +49,7 @@ export function getRoleColumns({
       size: 32,
       enableSorting: false,
       enableHiding: false,
+      enablePinning: true,
     },
     {
       id: "name",
@@ -69,6 +70,7 @@ export function getRoleColumns({
         icon: TextIcon,
       },
       enableColumnFilter: true,
+      enablePinning: true,
     },
     {
       id: "guard_name",
@@ -131,6 +133,9 @@ export function getRoleColumns({
       id: "actions",
       cell: ({ row }) => <RoleRowActions role={row.original} onEdit={onEdit} />,
       size: 32,
+      enableSorting: false,
+      enableHiding: false,
+      enablePinning: true,
     },
   ]
 }

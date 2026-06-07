@@ -72,6 +72,28 @@ export function getSubscriptionColumns(): ColumnDef<Subscription>[] {
       size: 32,
       enableSorting: false,
       enableHiding: false,
+      enablePinning: true,
+    },
+    {
+      id: "tenant",
+      accessorFn: (row) => row.tenant?.name ?? "—",
+      header: ({ column }: { column: Column<Subscription, unknown> }) => (
+        <DataTableColumnHeader column={column} label="Tenant" />
+      ),
+      cell: ({ row }) => (
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-1 font-medium">
+            <Building2Icon className="size-4 text-muted-foreground" />
+            {row.original.tenant?.name ?? "—"}
+          </div>
+          {row.original.tenant?.domain ? (
+            <span className="ps-5 text-xs text-muted-foreground">
+              {row.original.tenant.domain}
+            </span>
+          ) : null}
+        </div>
+      ),
+      enablePinning: true,
     },
     {
       id: "status",
@@ -98,26 +120,6 @@ export function getSubscriptionColumns(): ColumnDef<Subscription>[] {
         icon: TextIcon,
       },
       enableColumnFilter: true,
-    },
-    {
-      id: "tenant",
-      accessorFn: (row) => row.tenant?.name ?? "—",
-      header: ({ column }: { column: Column<Subscription, unknown> }) => (
-        <DataTableColumnHeader column={column} label="Tenant" />
-      ),
-      cell: ({ row }) => (
-        <div className="flex flex-col gap-0.5">
-          <div className="flex items-center gap-1 font-medium">
-            <Building2Icon className="size-4 text-muted-foreground" />
-            {row.original.tenant?.name ?? "—"}
-          </div>
-          {row.original.tenant?.domain ? (
-            <span className="ps-5 text-xs text-muted-foreground">
-              {row.original.tenant.domain}
-            </span>
-          ) : null}
-        </div>
-      ),
     },
     {
       id: "plan",
@@ -211,6 +213,9 @@ export function getSubscriptionColumns(): ColumnDef<Subscription>[] {
         <SubscriptionRowActions subscription={row.original} />
       ),
       size: 32,
+      enableSorting: false,
+      enableHiding: false,
+      enablePinning: true,
     },
   ]
 }

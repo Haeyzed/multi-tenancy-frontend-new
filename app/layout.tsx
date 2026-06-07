@@ -25,7 +25,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", publicSans.variable)}
     >
-      <body>
+      <body suppressHydrationWarning>
         <AppProviders>
           <ThemeProvider>
             <TooltipProvider>

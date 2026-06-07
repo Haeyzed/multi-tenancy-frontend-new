@@ -53,6 +53,7 @@ export function getTenantColumns(): ColumnDef<Tenant>[] {
       size: 32,
       enableSorting: false,
       enableHiding: false,
+      enablePinning: true,
     },
     {
       id: "name",
@@ -70,6 +71,7 @@ export function getTenantColumns(): ColumnDef<Tenant>[] {
         icon: TextIcon,
       },
       enableColumnFilter: true,
+      enablePinning: true,
     },
     {
       id: "slug",
@@ -145,6 +147,9 @@ export function getTenantColumns(): ColumnDef<Tenant>[] {
       id: "actions",
       cell: ({ row }) => <TenantRowActions tenant={row.original} />,
       size: 32,
+      enableSorting: false,
+      enableHiding: false,
+      enablePinning: true,
     },
   ]
 }

@@ -49,6 +49,7 @@ export function getPermissionColumns({
       size: 32,
       enableSorting: false,
       enableHiding: false,
+      enablePinning: true,
     },
     {
       id: "name",
@@ -69,6 +70,7 @@ export function getPermissionColumns({
         icon: TextIcon,
       },
       enableColumnFilter: true,
+      enablePinning: true,
     },
     {
       id: "guard_name",
@@ -115,6 +117,9 @@ export function getPermissionColumns({
         <PermissionRowActions permission={row.original} onEdit={onEdit} />
       ),
       size: 32,
+      enableSorting: false,
+      enableHiding: false,
+      enablePinning: true,
     },
   ]
 }

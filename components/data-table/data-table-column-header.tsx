@@ -2,10 +2,13 @@
 
 import type { Column } from "@tanstack/react-table";
 import {
+  ArrowLeftToLine,
+  ArrowRightToLine,
   ChevronDown,
   ChevronsUpDown,
   ChevronUp,
   EyeOff,
+  PinOff,
   X,
 } from "lucide-react";
 
@@ -30,7 +33,7 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
   ...props
 }: DataTableColumnHeaderProps<TData, TValue>) {
-  if (!column.getCanSort() && !column.getCanHide()) {
+  if (!column.getCanSort() && !column.getCanHide() && !column.getCanPin()) {
     return <div className={cn(className)}>{label}</div>;
   }
 
@@ -53,7 +56,7 @@ export function DataTableColumnHeader<TData, TValue>({
             <ChevronsUpDown />
           ))}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-28">
+      <DropdownMenuContent align="start" className="w-36">
         {column.getCanSort() && (
           <>
             <DropdownMenuCheckboxItem
@@ -92,6 +95,37 @@ export function DataTableColumnHeader<TData, TValue>({
             <EyeOff />
             Hide
           </DropdownMenuCheckboxItem>
+        )}
+        {column.getCanPin() && (
+          <>
+            {column.getIsPinned() !== "left" && (
+              <DropdownMenuItem
+                className="ps-2 [&_svg]:text-muted-foreground"
+                onClick={() => column.pin("left")}
+              >
+                <ArrowLeftToLine />
+                Pin to left
+              </DropdownMenuItem>
+            )}
+            {column.getIsPinned() !== "right" && (
+              <DropdownMenuItem
+                className="ps-2 [&_svg]:text-muted-foreground"
+                onClick={() => column.pin("right")}
+              >
+                <ArrowRightToLine />
+                Pin to right
+              </DropdownMenuItem>
+            )}
+            {column.getIsPinned() && (
+              <DropdownMenuItem
+                className="ps-2 [&_svg]:text-muted-foreground"
+                onClick={() => column.pin(false)}
+              >
+                <PinOff />
+                Unpin
+              </DropdownMenuItem>
+            )}
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>

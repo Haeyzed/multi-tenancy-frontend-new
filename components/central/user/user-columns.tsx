@@ -59,6 +59,7 @@ export function getUserColumns({
       size: 32,
       enableSorting: false,
       enableHiding: false,
+      enablePinning: true,
     },
     {
       id: "name",
@@ -79,6 +80,7 @@ export function getUserColumns({
         icon: TextIcon,
       },
       enableColumnFilter: true,
+      enablePinning: true,
     },
     {
       id: "email",
@@ -213,6 +215,9 @@ export function getUserColumns({
         <UserRowActions user={row.original} onEdit={onEdit} />
       ),
       size: 32,
+      enableSorting: false,
+      enableHiding: false,
+      enablePinning: true,
     },
   ]
 }

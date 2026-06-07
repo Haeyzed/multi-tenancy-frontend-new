@@ -55,6 +55,7 @@ export function getPlanColumns({
       size: 32,
       enableSorting: false,
       enableHiding: false,
+      enablePinning: true,
     },
     {
       id: "name",
@@ -82,6 +83,7 @@ export function getPlanColumns({
         icon: TextIcon,
       },
       enableColumnFilter: true,
+      enablePinning: true,
     },
     {
       id: "tier",
@@ -186,6 +188,9 @@ export function getPlanColumns({
         <PlanRowActions plan={row.original} onEdit={onEdit} />
       ),
       size: 32,
+      enableSorting: false,
+      enableHiding: false,
+      enablePinning: true,
     },
   ]
 }
