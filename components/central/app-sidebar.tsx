@@ -19,6 +19,7 @@ import {
   FrameIcon,
   LayersIcon,
   MapIcon,
+  MegaphoneIcon,
   PieChartIcon,
   Settings2Icon,
   ShieldIcon,
@@ -86,6 +87,7 @@ const data = {
       items: [
         { title: "General", url: "#" },
         { title: "Billing", url: "#" },
+        { title: "Announcements", url: "/central/announcements" },
       ],
     },
   ],
@@ -104,6 +106,11 @@ const data = {
       name: "Invoices",
       url: "#",
       icon: <PieChartIcon />,
+    },
+    {
+      name: "Announcements",
+      url: "/central/announcements",
+      icon: <MegaphoneIcon />,
     },
     {
       name: "Support",

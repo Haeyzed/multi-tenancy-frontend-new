@@ -59,4 +59,9 @@ export const queryKeys = {
     byPlan: (planId: string) =>
       [...queryKeys.planFeatures.all, "by-plan", planId] as const,
   },
+  announcements: {
+    all: ["announcements"] as const,
+    list: (params: { page: number; perPage: number; search: string }) =>
+      [...queryKeys.announcements.all, "list", params] as const,
+  },
 } as const
