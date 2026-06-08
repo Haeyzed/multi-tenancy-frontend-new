@@ -284,7 +284,7 @@ function ResponsiveDialogContent({
     return (
       <DrawerContent
         data-variant="drawer"
-        className={cn("px-4 pb-4", className)}
+        className={cn("app-glass-panel px-4 pb-4", className)}
         {...props}
       />
     );
@@ -293,7 +293,7 @@ function ResponsiveDialogContent({
   return (
     <DialogContent
       data-variant="dialog"
-      className={className}
+      className={cn("app-glass-panel", className)}
       showCloseButton={showCloseButton}
       {...props}
     />

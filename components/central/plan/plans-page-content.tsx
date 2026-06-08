@@ -7,7 +7,7 @@ import { PlanFormDialog } from "@/components/central/plan/plan-form-dialog"
 import { PlanMetricCards } from "@/components/central/plan/plan-metric-cards"
 import { PlansDataTable } from "@/components/central/plan/plans-data-table"
 import { Can } from "@/components/central/can"
-import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
+import { PageHeader } from "@/components/layout/page-header"
 import { Button } from "@/components/ui/button"
 import { Permissions } from "@/lib/central/auth/permissions"
 import type { Plan } from "@/types/central/plan"
@@ -27,29 +27,18 @@ export function PlansPageContent() {
   }, [])
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <PageBreadcrumb
-          items={[
-            { label: "Central", href: "/central/dashboard" },
-            { label: "Plans" },
-          ]}
-        />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Plans</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage subscription plans, pricing tiers, and enforceable features.
-            </p>
-          </div>
-          <Can permission={Permissions.billing.manage}>
-            <Button onClick={openCreate}>
-              <PlusIcon />
-              Create plan
-            </Button>
-          </Can>
-        </div>
-      </div>
+    <>
+      <PageHeader
+        title="Plans"
+        description="Manage subscription plans, pricing tiers, and enforceable features."
+      >
+        <Can permission={Permissions.billing.manage}>
+          <Button onClick={openCreate}>
+            <PlusIcon />
+            Create plan
+          </Button>
+        </Can>
+      </PageHeader>
 
       <PlanMetricCards />
 
@@ -60,6 +49,6 @@ export function PlansPageContent() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
-    </div>
+    </>
   )
 }

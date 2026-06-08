@@ -76,7 +76,16 @@ export interface DashboardRecent {
 }
 
 export interface DashboardOverview {
+  range?: {
+    start_date: string
+    end_date: string
+  }
   cards: DashboardMetricCard[]
   charts: DashboardCharts
   recent: DashboardRecent
+}
+
+export interface DashboardDateRangeParams {
+  start_date?: string
+  end_date?: string
 }

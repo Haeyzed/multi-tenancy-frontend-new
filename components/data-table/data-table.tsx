@@ -31,7 +31,7 @@ export function DataTable<TData>({
       {...props}
     >
       {children}
-      <div className="overflow-x-auto rounded-md border">
+      <div className="overflow-x-auto rounded-md border app-data-table-shell">
         <Table className="border-separate border-spacing-0 [&_td]:border-b [&_th]:border-b [&_tbody_tr:last-child>td]:border-b-0">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

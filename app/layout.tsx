@@ -29,7 +29,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var c=JSON.parse(localStorage.getItem("app-theme-config")||"{}");if(c.themeColor){document.documentElement.dataset.themeColor=c.themeColor}}catch(e){}})()`,
+            __html: `(function(){try{var c=JSON.parse(localStorage.getItem("app-theme-config")||"{}");if(c.themeColor&&c.themeColor!=="green"){document.documentElement.dataset.themeColor=c.themeColor}if(c.direction){document.documentElement.setAttribute("dir",c.direction)}}catch(e){}})()`,
           }}
         />
         <AppProviders>

@@ -51,7 +51,7 @@ export function NavMain({ items }: { items: NavMainItem[] }) {
   const pathname = usePathname()
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="p-2">
       <SidebarMenu>
         {items.map((item) =>
           item.items && item.items.length > 0 ? (

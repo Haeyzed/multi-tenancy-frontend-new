@@ -2,9 +2,10 @@
 
 import * as React from "react"
 import { useTheme } from "next-themes"
-import { CircleCheck, RotateCcw, Settings } from "lucide-react"
+import { CircleCheck, RotateCcw, Settings2 } from "lucide-react"
 
 import {
+  IconDir,
   IconLayoutCompact,
   IconLayoutDefault,
   IconLayoutFull,
@@ -14,9 +15,10 @@ import {
   IconThemeDark,
   IconThemeLight,
   IconThemeSystem,
-} from "@/components/central/config-icons"
+} from "@/assets/custom"
 import { Button } from "@/components/ui/button"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { RadioGroup } from "@/components/ui/radio-group"
+import { Radio as RadioPrimitive } from "@base-ui/react/radio"
 import {
   Sheet,
   SheetContent,
@@ -28,12 +30,10 @@ import {
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
 import {
-  sidebarLayoutOptions,
-  sidebarVariantOptions,
-  themeColorOptions,
+  type Direction,
   type SidebarLayout,
   type SidebarVariant,
-  type ThemeColor,
+  themeColorOptions,
 } from "@/lib/theme-config"
 import { useThemeConfig } from "@/providers/theme-config-provider"
 
@@ -79,20 +79,35 @@ function ConfigRadioItem({
   isTheme?: boolean
 }) {
   return (
-    <RadioGroupItem
+    <RadioPrimitive.Root
       value={value}
-      className={cn(
-        "relative flex size-auto w-full flex-col gap-2 rounded-lg border-2 bg-transparent p-2 shadow-none ring-0 after:hidden focus-visible:ring-0",
-        "border-muted bg-muted/30 hover:border-muted-foreground/30",
-        "data-checked:border-primary data-checked:bg-primary/5",
-        "[&_[data-slot=radio-group-indicator]]:hidden",
-        isTheme && "text-foreground",
-      )}
+      className="group/radio-group-item flex w-full flex-col outline-none transition duration-200"
     >
-      <Icon className="h-auto w-full" />
-      <span className="text-xs font-medium">{label}</span>
-      <CircleCheck className="absolute -top-2 -right-2 size-5 fill-primary stroke-primary-foreground opacity-0 data-checked:opacity-100" />
-    </RadioGroupItem>
+      <div
+        className={cn(
+          "relative rounded-[6px] ring-1 ring-border",
+          "group-data-checked/radio-group-item:shadow-lg group-data-checked/radio-group-item:ring-primary",
+        )}
+      >
+        <CircleCheck
+          className={cn(
+            "absolute top-0 right-0 z-10 size-6 translate-x-1/2 -translate-y-1/2",
+            "fill-primary stroke-primary-foreground",
+            "opacity-0 group-data-checked/radio-group-item:opacity-100",
+          )}
+          aria-hidden="true"
+        />
+        <Icon
+          className={cn(
+            "h-auto w-full overflow-hidden rounded-[6px]",
+            !isTheme &&
+              "fill-primary stroke-primary group-data-unchecked/radio-group-item:fill-muted-foreground group-data-unchecked/radio-group-item:stroke-muted-foreground",
+          )}
+          aria-hidden="true"
+        />
+      </div>
+      <span className="mt-1 text-center text-xs font-medium">{label}</span>
+    </RadioPrimitive.Root>
   )
 }
 
@@ -111,17 +126,26 @@ function ThemeConfig() {
       <RadioGroup
         value={currentTheme}
         onValueChange={(value) => setTheme(value as ThemeMode)}
-        className="grid w-full grid-cols-3 gap-4"
+        className="grid w-full max-w-md grid-cols-3 gap-4"
         aria-label="Select theme preference"
       >
         <ConfigRadioItem
           value="system"
           label="System"
           icon={IconThemeSystem}
+        />
+        <ConfigRadioItem
+          value="light"
+          label="Light"
+          icon={IconThemeLight}
           isTheme
         />
-        <ConfigRadioItem value="light" label="Light" icon={IconThemeLight} isTheme />
-        <ConfigRadioItem value="dark" label="Dark" icon={IconThemeDark} isTheme />
+        <ConfigRadioItem
+          value="dark"
+          label="Dark"
+          icon={IconThemeDark}
+          isTheme
+        />
       </RadioGroup>
     </section>
   )
@@ -151,15 +175,11 @@ function ThemeColorConfig() {
               title={option.label}
               onClick={() => setThemeColor(option.value)}
               className={cn(
-                "relative size-9 rounded-full ring-2 ring-offset-2 ring-offset-background transition-shadow",
+                "size-9 rounded-full transition-transform hover:scale-105",
                 option.className,
-                selected ? "ring-primary" : "ring-transparent hover:ring-border",
+                selected && "ring-2 ring-primary ring-offset-2 ring-offset-background",
               )}
-            >
-              {selected ? (
-                <CircleCheck className="absolute inset-0 m-auto size-4 fill-primary stroke-primary-foreground" />
-              ) : null}
-            </button>
+            />
           )
         })}
       </div>
@@ -175,13 +195,13 @@ function SidebarConfig() {
       <SectionTitle
         title="Sidebar"
         showReset
-        onReset={() => setSidebarVariant("inset")}
+        onReset={() => setSidebarVariant("sidebar")}
         resetAriaLabel="Reset sidebar style to default"
       />
       <RadioGroup
         value={config.sidebarVariant}
         onValueChange={(value) => setSidebarVariant(value as SidebarVariant)}
-        className="grid w-full grid-cols-3 gap-4"
+        className="grid w-full max-w-md grid-cols-3 gap-4"
         aria-label="Select sidebar style"
       >
         <ConfigRadioItem value="inset" label="Inset" icon={IconSidebarInset} />
@@ -210,7 +230,7 @@ function LayoutConfig() {
       <RadioGroup
         value={config.sidebarLayout}
         onValueChange={(value) => setSidebarLayout(value as SidebarLayout)}
-        className="grid w-full grid-cols-3 gap-4"
+        className="grid w-full max-w-md grid-cols-3 gap-4"
         aria-label="Select layout style"
       >
         <ConfigRadioItem
@@ -233,6 +253,46 @@ function LayoutConfig() {
   )
 }
 
+function IconDirLtr(props: React.SVGProps<SVGSVGElement>) {
+  return <IconDir dir="ltr" {...props} />
+}
+
+function IconDirRtl(props: React.SVGProps<SVGSVGElement>) {
+  return <IconDir dir="rtl" {...props} />
+}
+
+function DirectionConfig() {
+  const { config, setDirection } = useThemeConfig()
+
+  return (
+    <section>
+      <SectionTitle
+        title="Direction"
+        showReset
+        onReset={() => setDirection("ltr")}
+        resetAriaLabel="Reset text direction to default"
+      />
+      <RadioGroup
+        value={config.direction}
+        onValueChange={(value) => setDirection(value as Direction)}
+        className="grid w-full max-w-md grid-cols-3 gap-4"
+        aria-label="Select text direction"
+      >
+        <ConfigRadioItem
+          value="ltr"
+          label="Left to Right"
+          icon={IconDirLtr}
+        />
+        <ConfigRadioItem
+          value="rtl"
+          label="Right to Left"
+          icon={IconDirRtl}
+        />
+      </RadioGroup>
+    </section>
+  )
+}
+
 export function ConfigDrawer() {
   const { resetConfig } = useThemeConfig()
   const [open, setOpen] = React.useState(false)
@@ -240,18 +300,19 @@ export function ConfigDrawer() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
+        nativeButton={false}
         render={
           <Button variant="ghost" size="icon-sm" aria-label="Theme settings">
-            <Settings />
+            <Settings2 />
           </Button>
         }
       />
       <SheetContent
         side="right"
-        className="flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-md"
+        className="app-config-sheet flex w-full flex-col gap-0 overflow-y-auto border-l bg-background p-0 sm:max-w-md"
         showCloseButton
       >
-        <SheetHeader className="border-b px-6 py-5">
+        <SheetHeader className="px-6 py-5">
           <SheetTitle className="text-lg font-semibold">Theme Settings</SheetTitle>
           <SheetDescription>
             Adjust the appearance and layout to suit your preferences.
@@ -263,9 +324,10 @@ export function ConfigDrawer() {
           <ThemeColorConfig />
           <SidebarConfig />
           <LayoutConfig />
+          <DirectionConfig />
         </div>
 
-        <SheetFooter className="border-t px-6 py-4">
+        <SheetFooter className="border-t border-border/60 px-6 py-4">
           <Button className="w-full" onClick={resetConfig}>
             Reset
           </Button>

@@ -5,7 +5,8 @@ export const queryKeys = {
   },
   dashboard: {
     all: ["dashboard"] as const,
-    overview: () => [...queryKeys.dashboard.all, "overview"] as const,
+    overview: (params?: { start_date?: string; end_date?: string }) =>
+      [...queryKeys.dashboard.all, "overview", params ?? {}] as const,
   },
   tenants: {
     all: ["tenants"] as const,

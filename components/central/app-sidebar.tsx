@@ -140,7 +140,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TenantSwitcher />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="gap-0 py-0">
         <NavMain items={visibleItems} />
       </SidebarContent>
       <SidebarFooter>

@@ -1,19 +1,22 @@
 export type SidebarVariant = "inset" | "floating" | "sidebar"
 export type SidebarLayout = "default" | "icon" | "offcanvas"
 export type ThemeColor = "green" | "red" | "blue" | "violet" | "orange" | "rose"
+export type Direction = "ltr" | "rtl"
 
 export type ThemeConfig = {
   themeColor: ThemeColor
   sidebarVariant: SidebarVariant
   sidebarLayout: SidebarLayout
+  direction: Direction
 }
 
 export const THEME_CONFIG_STORAGE_KEY = "app-theme-config"
 
 export const defaultThemeConfig: ThemeConfig = {
   themeColor: "green",
-  sidebarVariant: "inset",
+  sidebarVariant: "sidebar",
   sidebarLayout: "default",
+  direction: "ltr",
 }
 
 export const themeColorOptions: {
@@ -91,6 +94,8 @@ export function readThemeConfig(): ThemeConfig {
       sidebarLayout: normalizeSidebarLayout(
         parsed.sidebarLayout ?? parsed.layout,
       ),
+      direction:
+        parsed.direction === "rtl" ? "rtl" : defaultThemeConfig.direction,
     }
   } catch {
     return defaultThemeConfig

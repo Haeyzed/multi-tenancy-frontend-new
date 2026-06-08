@@ -4,10 +4,10 @@ import { PlusIcon } from "lucide-react"
 import * as React from "react"
 
 import { Can } from "@/components/central/can"
-import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
 import { UserFormDialog } from "@/components/central/user/user-form-dialog"
 import { UserMetricCards } from "@/components/central/user/user-metric-cards"
 import { UsersDataTable } from "@/components/central/user/users-data-table"
+import { PageHeader } from "@/components/layout/page-header"
 import { Button } from "@/components/ui/button"
 import { Permissions } from "@/lib/central/auth/permissions"
 import type { User } from "@/types/central/user"
@@ -27,29 +27,18 @@ export function UsersPageContent() {
   }, [])
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <PageBreadcrumb
-          items={[
-            { label: "Central", href: "/central/dashboard" },
-            { label: "Users" },
-          ]}
-        />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Users</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage platform administrators, roles, and permissions.
-            </p>
-          </div>
-          <Can permission={Permissions.users.create}>
-            <Button onClick={openCreate}>
-              <PlusIcon />
-              Create user
-            </Button>
-          </Can>
-        </div>
-      </div>
+    <>
+      <PageHeader
+        title="Users"
+        description="Manage platform administrators, roles, and permissions."
+      >
+        <Can permission={Permissions.users.create}>
+          <Button onClick={openCreate}>
+            <PlusIcon />
+            Create user
+          </Button>
+        </Can>
+      </PageHeader>
 
       <UserMetricCards />
 
@@ -60,6 +49,6 @@ export function UsersPageContent() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
-    </div>
+    </>
   )
 }

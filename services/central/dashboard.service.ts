@@ -1,8 +1,11 @@
 import { apiClient } from "@/lib/central/api/client"
-import type { DashboardOverview } from "@/types/central/dashboard"
+import type {
+  DashboardDateRangeParams,
+  DashboardOverview,
+} from "@/types/central/dashboard"
 
 export const dashboardService = {
-  getOverview() {
-    return apiClient.get<DashboardOverview>("dashboard")
+  getOverview(params?: DashboardDateRangeParams) {
+    return apiClient.get<DashboardOverview>("dashboard", { query: params })
   },
 }

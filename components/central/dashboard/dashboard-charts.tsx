@@ -73,9 +73,13 @@ function formatRevenue(value: number) {
 
 interface DashboardChartsProps {
   charts: DashboardCharts
+  rangeLabel?: string
 }
 
-export function DashboardChartsSection({ charts }: DashboardChartsProps) {
+export function DashboardChartsSection({
+  charts,
+  rangeLabel = "selected range",
+}: DashboardChartsProps) {
   const hasTenantGrowth = (charts.tenant_growth?.length ?? 0) > 0
   const hasRevenue = (charts.revenue_over_time?.length ?? 0) > 0
   const hasTenantStatus = (charts.tenant_status?.length ?? 0) > 0
@@ -92,7 +96,7 @@ export function DashboardChartsSection({ charts }: DashboardChartsProps) {
           <CardHeader>
             <CardTitle>Revenue over time</CardTitle>
             <CardDescription>
-              Successful payments over the last 30 days
+              Successful payments for {rangeLabel}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -140,7 +144,7 @@ export function DashboardChartsSection({ charts }: DashboardChartsProps) {
         <Card>
           <CardHeader>
             <CardTitle>Tenant growth</CardTitle>
-            <CardDescription>New tenants per day (30 days)</CardDescription>
+            <CardDescription>New tenants per day for {rangeLabel}</CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={tenantGrowthConfig} className="aspect-auto h-[260px] w-full">

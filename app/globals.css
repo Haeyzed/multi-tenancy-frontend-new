@@ -263,6 +263,9 @@
     0 12px 40px color-mix(in oklch, var(--brand-mid) 8%, transparent);
   --glass-bg: oklch(1 0 0 / 0.72);
   --glass-border: oklch(1 0 0 / 0.45);
+  --glass-brand-bg: color-mix(in oklch, var(--brand-soft) 12%, var(--glass-bg));
+  --glass-brand-border: color-mix(in oklch, var(--brand-main) 22%, var(--glass-border));
+  --glass-brand-highlight: color-mix(in oklch, var(--brand-light) 10%, transparent);
 }
 
 .dark,
@@ -473,6 +476,9 @@
     0 12px 40px color-mix(in oklch, var(--brand-mid) 12%, transparent);
   --glass-bg: oklch(0.205 0 0 / 0.65);
   --glass-border: oklch(1 0 0 / 0.1);
+  --glass-brand-bg: color-mix(in oklch, var(--brand-main) 14%, var(--glass-bg));
+  --glass-brand-border: color-mix(in oklch, var(--brand-light) 18%, var(--glass-border));
+  --glass-brand-highlight: color-mix(in oklch, var(--brand-mid) 14%, transparent);
 }
 
 @layer base {
@@ -485,9 +491,7 @@
   }
 
   body {
-    @apply text-foreground;
-    background: var(--app-bg);
-    background-attachment: fixed;
+    @apply bg-background text-foreground;
     min-height: 100vh;
   }
 }
@@ -538,6 +542,54 @@
     backdrop-filter: blur(12px);
   }
 
+  .app-glass-panel {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--brand-soft) 10%, transparent),
+        transparent 30%
+      ),
+      var(--glass-brand-bg);
+    backdrop-filter: blur(18px);
+    border-color: var(--glass-brand-border);
+    box-shadow: var(--shadow-elevated);
+  }
+
+  .dark .app-glass-panel {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--brand-main) 12%, transparent),
+        transparent 34%
+      ),
+      var(--glass-brand-bg);
+  }
+
+  [data-slot="dialog-content"],
+  [data-slot="popover-content"] {
+    background:
+      linear-gradient(
+        160deg,
+        var(--glass-brand-highlight),
+        transparent 42%
+      ),
+      var(--gradient-surface);
+    box-shadow: var(--shadow-elevated);
+    border-color: color-mix(in oklch, var(--brand-main) 10%, var(--border));
+  }
+
+  [data-slot="drawer-content"] {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--brand-soft) 10%, transparent),
+        transparent 28%
+      ),
+      var(--glass-brand-bg);
+    backdrop-filter: blur(18px);
+    border-color: var(--glass-brand-border);
+  }
+
   /* Decorative glow orb */
   .app-glow::before {
     content: "";
@@ -556,17 +608,84 @@
 
   /* App-wide data-slot enhancements */
   [data-slot="card"] {
-    background: var(--gradient-card);
+    background:
+      linear-gradient(
+        160deg,
+        var(--glass-brand-highlight),
+        transparent 42%
+      ),
+      var(--gradient-card);
+    backdrop-filter: blur(10px);
     box-shadow: var(--shadow-card);
+    border: 1px solid color-mix(in oklch, var(--brand-main) 8%, var(--border));
+  }
+
+  [data-slot="sheet-content"].app-config-sheet,
+  .app-config-sheet[data-slot="sheet-content"] {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--brand-soft) 10%, transparent),
+        transparent 28%
+      ),
+      color-mix(in oklch, var(--glass-brand-bg) 92%, var(--background));
+    backdrop-filter: blur(18px);
+    border-color: var(--glass-brand-border);
+    box-shadow: var(--shadow-elevated);
+    color: var(--foreground);
+  }
+
+  .app-data-table-shell {
+    overflow: hidden;
+    border-color: color-mix(in oklch, var(--brand-main) 10%, var(--border));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--brand-soft) 8%, transparent),
+        transparent 36%
+      ),
+      var(--gradient-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .app-data-table-shell [data-slot="table-header"],
+  .app-data-table-shell thead {
+    background: var(--gradient-primary-soft);
+  }
+
+  .app-data-table-shell tbody tr:hover {
+    background: color-mix(in oklch, var(--brand-main) 6%, transparent);
+  }
+
+  .dark .app-data-table-shell {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklch, var(--brand-main) 10%, transparent),
+        transparent 40%
+      ),
+      var(--gradient-card);
+  }
+
+  .dark .app-data-table-shell [data-slot="table-header"],
+  .dark .app-data-table-shell thead {
+    background: var(--gradient-primary-soft);
   }
 
   [data-slot="sidebar-inner"] {
     background: var(--gradient-sidebar);
   }
 
+  [data-slot="sidebar-wrapper"] {
+    min-height: 100svh;
+    background: var(--background);
+  }
+
   [data-slot="sidebar-inset"] {
     position: relative;
     isolation: isolate;
+    overflow-x: clip;
+    overflow-y: visible;
   }
 
   [data-slot="sidebar-inset"]::before {
@@ -578,19 +697,19 @@
     z-index: 0;
   }
 
-  [data-slot="sidebar-inset"] > * {
+  [data-slot="sidebar-inset"] > :not(header) {
     position: relative;
     z-index: 1;
   }
 
-  [data-slot="card-footer"] {
-    background: var(--gradient-muted);
+  [data-slot="sidebar-inset"] > header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
 
-  [data-slot="popover-content"],
-  [data-slot="dialog-content"] {
-    background: var(--gradient-surface);
-    box-shadow: var(--shadow-elevated);
+  [data-slot="card-footer"] {
+    background: var(--gradient-muted);
   }
 
   [data-slot="sidebar-menu-button"][data-active="true"] {
@@ -691,63 +810,25 @@
     );
   }
 
-  .app-metric-card--billing {
-    --metric-accent: oklch(0.546 0.215 262.881);
-    --metric-accent-gradient: linear-gradient(
-      90deg,
-      oklch(0.488 0.217 264.376),
-      oklch(0.623 0.214 259.815)
-    );
-    --metric-accent-soft: oklch(0.546 0.215 262.881 / 0.12);
-    --metric-accent-glow: radial-gradient(
-      circle,
-      oklch(0.623 0.214 259.815 / 0.2),
-      transparent 68%
-    );
-    --metric-icon-bg: linear-gradient(
-      145deg,
-      oklch(0.546 0.215 262.881 / 0.2),
-      oklch(0.623 0.214 259.815 / 0.08)
-    );
-  }
-
-  .app-metric-card--users {
-    --metric-accent: oklch(0.541 0.198 293.009);
-    --metric-accent-gradient: linear-gradient(
-      90deg,
-      oklch(0.491 0.22 292.581),
-      oklch(0.606 0.19 293.541)
-    );
-    --metric-accent-soft: oklch(0.541 0.198 293.009 / 0.12);
-    --metric-accent-glow: radial-gradient(
-      circle,
-      oklch(0.606 0.19 293.541 / 0.2),
-      transparent 68%
-    );
-    --metric-icon-bg: linear-gradient(
-      145deg,
-      oklch(0.541 0.198 293.009 / 0.2),
-      oklch(0.606 0.19 293.541 / 0.08)
-    );
-  }
-
+  .app-metric-card--billing,
+  .app-metric-card--users,
   .app-metric-card--support {
-    --metric-accent: oklch(0.666 0.179 58.318);
+    --metric-accent: var(--brand-main);
     --metric-accent-gradient: linear-gradient(
       90deg,
-      oklch(0.553 0.173 38.402),
-      oklch(0.705 0.187 47.604)
+      var(--gradient-brand-start),
+      var(--gradient-brand-end)
     );
-    --metric-accent-soft: oklch(0.666 0.179 58.318 / 0.12);
+    --metric-accent-soft: color-mix(in oklch, var(--brand-main) 12%, transparent);
     --metric-accent-glow: radial-gradient(
       circle,
-      oklch(0.705 0.187 47.604 / 0.2),
+      color-mix(in oklch, var(--brand-mid) 20%, transparent),
       transparent 68%
     );
     --metric-icon-bg: linear-gradient(
       145deg,
-      oklch(0.666 0.179 58.318 / 0.2),
-      oklch(0.705 0.187 47.604 / 0.08)
+      color-mix(in oklch, var(--brand-main) 20%, transparent),
+      color-mix(in oklch, var(--brand-light) 8%, transparent)
     );
   }
 

@@ -4,10 +4,10 @@ import { PlusIcon } from "lucide-react"
 import * as React from "react"
 
 import { Can } from "@/components/central/can"
-import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
 import { PermissionFormDialog } from "@/components/central/permission/permission-form-dialog"
 import { PermissionMetricCards } from "@/components/central/permission/permission-metric-cards"
 import { PermissionsDataTable } from "@/components/central/permission/permissions-data-table"
+import { PageHeader } from "@/components/layout/page-header"
 import { Button } from "@/components/ui/button"
 import { Permissions } from "@/lib/central/auth/permissions"
 import type { Permission } from "@/types/central/permission"
@@ -28,29 +28,18 @@ export function PermissionsPageContent() {
   }, [])
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <PageBreadcrumb
-          items={[
-            { label: "Central", href: "/central/dashboard" },
-            { label: "Permissions" },
-          ]}
-        />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Permissions</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage Spatie permissions grouped by functional modules.
-            </p>
-          </div>
-          <Can permission={Permissions.permissions.create}>
-            <Button onClick={openCreate}>
-              <PlusIcon />
-              Create permission
-            </Button>
-          </Can>
-        </div>
-      </div>
+    <>
+      <PageHeader
+        title="Permissions"
+        description="Manage Spatie permissions grouped by functional modules."
+      >
+        <Can permission={Permissions.permissions.create}>
+          <Button onClick={openCreate}>
+            <PlusIcon />
+            Create permission
+          </Button>
+        </Can>
+      </PageHeader>
 
       <PermissionMetricCards />
 
@@ -61,6 +50,6 @@ export function PermissionsPageContent() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
-    </div>
+    </>
   )
 }

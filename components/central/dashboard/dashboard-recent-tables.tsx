@@ -1,5 +1,7 @@
 "use client"
 
+import * as React from "react"
+
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -27,18 +29,27 @@ function StatusBadge({ value }: { value: string }) {
   )
 }
 
-interface DashboardRecentTablesProps {
-  recent: DashboardRecent
+function TableShell({ children }: { children: React.ReactNode }) {
+  return <div className="app-data-table-shell">{children}</div>
 }
 
-export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
+interface DashboardRecentTablesProps {
+  recent: DashboardRecent
+  rangeLabel?: string
+}
+
+export function DashboardRecentTables({
+  recent,
+  rangeLabel = "the selected date range",
+}: DashboardRecentTablesProps) {
   const sections = [
     recent.tenants?.length
       ? {
           key: "tenants",
           title: "Recent tenants",
-          description: "Latest organizations onboarded to the platform",
+          description: `Latest organizations onboarded during ${rangeLabel}`,
           content: (
+            <TableShell>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -70,6 +81,7 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
                 ))}
               </TableBody>
             </Table>
+            </TableShell>
           ),
         }
       : null,
@@ -77,8 +89,9 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
       ? {
           key: "subscriptions",
           title: "Recent subscriptions",
-          description: "Latest subscription activity",
+          description: `Latest subscription activity during ${rangeLabel}`,
           content: (
+            <TableShell>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -107,6 +120,7 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
                 ))}
               </TableBody>
             </Table>
+            </TableShell>
           ),
         }
       : null,
@@ -114,8 +128,9 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
       ? {
           key: "payments",
           title: "Recent payments",
-          description: "Latest payment transactions",
+          description: `Latest payment transactions during ${rangeLabel}`,
           content: (
+            <TableShell>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -142,6 +157,7 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
                 ))}
               </TableBody>
             </Table>
+            </TableShell>
           ),
         }
       : null,
@@ -149,8 +165,9 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
       ? {
           key: "support_tickets",
           title: "Open support tickets",
-          description: "Tickets needing attention",
+          description: `Tickets needing attention during ${rangeLabel}`,
           content: (
+            <TableShell>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -177,6 +194,7 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
                 ))}
               </TableBody>
             </Table>
+            </TableShell>
           ),
         }
       : null,
@@ -184,8 +202,9 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
       ? {
           key: "activities",
           title: "Recent activity",
-          description: "Latest platform audit events",
+          description: `Latest platform audit events during ${rangeLabel}`,
           content: (
+            <TableShell>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -210,6 +229,7 @@ export function DashboardRecentTables({ recent }: DashboardRecentTablesProps) {
                 ))}
               </TableBody>
             </Table>
+            </TableShell>
           ),
         }
       : null,

@@ -3,9 +3,11 @@
 import * as React from "react"
 import { useTheme } from "next-themes"
 
+import { DirectionProvider } from "@/components/ui/direction"
 import {
   defaultThemeConfig,
   readThemeConfig,
+  type Direction,
   type SidebarLayout,
   type SidebarVariant,
   type ThemeColor,
@@ -18,6 +20,7 @@ type ThemeConfigContextValue = {
   setThemeColor: (themeColor: ThemeColor) => void
   setSidebarVariant: (sidebarVariant: SidebarVariant) => void
   setSidebarLayout: (sidebarLayout: SidebarLayout) => void
+  setDirection: (direction: Direction) => void
   resetConfig: () => void
 }
 
@@ -34,6 +37,10 @@ function applyThemeColor(themeColor: ThemeColor) {
   document.documentElement.dataset.themeColor = themeColor
 }
 
+function applyDirection(direction: Direction) {
+  document.documentElement.setAttribute("dir", direction)
+}
+
 export function ThemeConfigProvider({
   children,
 }: {
@@ -46,6 +53,7 @@ export function ThemeConfigProvider({
     const stored = readThemeConfig()
     setConfig(stored)
     applyThemeColor(stored.themeColor)
+    applyDirection(stored.direction)
   }, [])
 
   const persist = React.useCallback(
@@ -54,6 +62,7 @@ export function ThemeConfigProvider({
         const next = updater(current)
         writeThemeConfig(next)
         applyThemeColor(next.themeColor)
+        applyDirection(next.direction)
         return next
       })
     },
@@ -81,6 +90,13 @@ export function ThemeConfigProvider({
     [persist],
   )
 
+  const setDirection = React.useCallback(
+    (direction: Direction) => {
+      persist((current) => ({ ...current, direction }))
+    },
+    [persist],
+  )
+
   const resetConfig = React.useCallback(() => {
     setTheme("system")
     persist(() => defaultThemeConfig)
@@ -92,14 +108,24 @@ export function ThemeConfigProvider({
       setThemeColor,
       setSidebarVariant,
       setSidebarLayout,
+      setDirection,
       resetConfig,
     }),
-    [config, setSidebarLayout, setSidebarVariant, setThemeColor, resetConfig],
+    [
+      config,
+      setDirection,
+      setSidebarLayout,
+      setSidebarVariant,
+      setThemeColor,
+      resetConfig,
+    ],
   )
 
   return (
     <ThemeConfigContext.Provider value={value}>
-      {children}
+      <DirectionProvider direction={config.direction}>
+        {children}
+      </DirectionProvider>
     </ThemeConfigContext.Provider>
   )
 }

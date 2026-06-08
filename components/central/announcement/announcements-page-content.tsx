@@ -6,7 +6,7 @@ import * as React from "react"
 import { Can } from "@/components/central/can"
 import { AnnouncementFormDialog } from "@/components/central/announcement/announcement-form-dialog"
 import { AnnouncementsDataTable } from "@/components/central/announcement/announcements-data-table"
-import { PageBreadcrumb } from "@/components/central/page-breadcrumb"
+import { PageHeader } from "@/components/layout/page-header"
 import { Button } from "@/components/ui/button"
 import { Permissions } from "@/lib/central/auth/permissions"
 import type { PlatformAnnouncement } from "@/types/central/announcement"
@@ -27,29 +27,18 @@ export function AnnouncementsPageContent() {
   }, [])
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2">
-        <PageBreadcrumb
-          items={[
-            { label: "Central", href: "/central/dashboard" },
-            { label: "Announcements" },
-          ]}
-        />
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Announcements</h1>
-            <p className="text-sm text-muted-foreground">
-              Create and manage platform-wide messages for tenants and admins.
-            </p>
-          </div>
-          <Can permission={Permissions.platform.manage}>
-            <Button onClick={openCreate}>
-              <PlusIcon />
-              Create announcement
-            </Button>
-          </Can>
-        </div>
-      </div>
+    <>
+      <PageHeader
+        title="Announcements"
+        description="Create and manage platform-wide messages for tenants and admins."
+      >
+        <Can permission={Permissions.platform.manage}>
+          <Button onClick={openCreate}>
+            <PlusIcon />
+            Create announcement
+          </Button>
+        </Can>
+      </PageHeader>
 
       <AnnouncementsDataTable onEdit={openEdit} />
 
@@ -58,6 +47,6 @@ export function AnnouncementsPageContent() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
-    </div>
+    </>
   )
 }
