@@ -38,6 +38,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ApiError } from "@/lib/central/api/errors"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { planFeatureService } from "@/services/central/plan-feature.service"
 import type { Plan } from "@/types/central/plan"
@@ -148,7 +149,11 @@ export function PlanFeaturesDialog({
 
       return planFeatureService.create(payload)
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      toastApiMessage(
+        result.message,
+        editingFeature ? "Feature updated successfully." : "Feature created successfully.",
+      )
       await invalidate()
       setForm(defaultFormState)
       setEditingFeature(null)
@@ -170,7 +175,8 @@ export function PlanFeaturesDialog({
 
     const featureId = deletingFeature.id
 
-    await planFeatureService.delete(featureId)
+    const result = await planFeatureService.delete(featureId)
+    toastApiMessage(result.message, "Feature deleted successfully.")
     await invalidate()
 
     if (editingFeature?.id === featureId) {

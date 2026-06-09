@@ -27,6 +27,8 @@ export interface PlanListParams {
   page?: number
   per_page?: number
   search?: string
+  is_active?: string
+  is_public?: string
 }
 
 /** Payload for POST /plans and PUT /plans/{id} */

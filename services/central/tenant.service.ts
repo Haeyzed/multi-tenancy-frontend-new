@@ -1,5 +1,6 @@
 import { apiClient, apiPaginatedRequest } from "@/lib/central/api/client"
 import type { SelectOption } from "@/types/central/api"
+import type { TenantFeatures } from "@/types/central/tenant-features"
 import type { MetricCard, Tenant, TenantFormPayload, TenantListParams } from "@/types/central/tenant"
 
 export const tenantService = {
@@ -19,11 +20,11 @@ export const tenantService = {
   },
 
   create(payload: TenantFormPayload) {
-    return apiClient.post<Tenant>("tenants", payload)
+    return apiClient.postWithMessage<Tenant>("tenants", payload)
   },
 
   update(id: string, payload: Partial<TenantFormPayload>) {
-    return apiClient.put<Tenant>(`tenants/${id}`, payload)
+    return apiClient.putWithMessage<Tenant>(`tenants/${id}`, payload)
   },
 
   getMetrics() {
@@ -33,10 +34,18 @@ export const tenantService = {
   },
 
   delete(id: string) {
-    return apiClient.delete<void>(`tenants/${id}`)
+    return apiClient.deleteWithMessage<void>(`tenants/${id}`)
   },
 
   bulkDelete(ids: string[]) {
-    return apiClient.bulkDelete<{ deleted: number }>("tenants/bulk", ids)
+    return apiClient.bulkDeleteWithMessage<{ deleted: number }>("tenants/bulk", ids)
+  },
+
+  getFeatures(id: string) {
+    return apiClient.get<TenantFeatures>(`tenants/${id}/features`)
+  },
+
+  getExpiring(days = 30) {
+    return apiClient.get<Tenant[]>(`tenants/expiring/${days}`)
   },
 }

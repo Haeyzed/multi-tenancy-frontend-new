@@ -20,19 +20,19 @@ export const userService = {
   },
 
   create(payload: UserFormPayload) {
-    return apiClient.post<User>("users", payload)
+    return apiClient.postWithMessage<User>("users", payload)
   },
 
   update(id: number, payload: Partial<UserFormPayload>) {
-    return apiClient.put<User>(`users/${id}`, payload)
+    return apiClient.putWithMessage<User>(`users/${id}`, payload)
   },
 
   delete(id: number) {
-    return apiClient.delete<void>(`users/${id}`)
+    return apiClient.deleteWithMessage<void>(`users/${id}`)
   },
 
   bulkDelete(ids: number[]) {
-    return apiClient.bulkDelete<{ deleted: number }>("users/bulk", ids)
+    return apiClient.bulkDeleteWithMessage<{ deleted: number }>("users/bulk", ids)
   },
 
   syncRoles(id: number, roleIds: number[]) {

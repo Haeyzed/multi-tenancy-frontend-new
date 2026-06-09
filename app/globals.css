@@ -484,19 +484,61 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
 
   html {
-    @apply font-sans;
+    @apply overflow-x-hidden font-sans;
   }
 
   body {
-    @apply bg-background text-foreground;
-    min-height: 100vh;
+    @apply min-h-svh w-full bg-background text-foreground;
+  }
+
+  body:has([data-slot="sidebar"][data-variant="inset"]) {
+    @apply bg-sidebar;
+  }
+
+  body[data-scroll-locked] {
+    overflow: unset !important;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
   }
 }
 
+@utility no-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @layer components {
+  .collapsible-content {
+    overflow: hidden;
+  }
+
+  .collapsible-content[data-open] {
+    animation: collapsible-slide-down 300ms ease-out;
+  }
+
+  .collapsible-content:not([data-open]) {
+    animation: collapsible-slide-up 300ms ease-out;
+  }
+
   .data-table-container {
     @apply w-full max-w-full min-w-0;
   }
@@ -890,5 +932,27 @@
       oklch(0.708 0 0 / 0.14),
       oklch(0.556 0 0 / 0.08)
     );
+  }
+}
+
+@keyframes collapsible-slide-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--collapsible-panel-height, auto);
+    opacity: 1;
+  }
+}
+
+@keyframes collapsible-slide-up {
+  from {
+    height: var(--collapsible-panel-height, auto);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
   }
 }

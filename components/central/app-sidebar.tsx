@@ -40,6 +40,16 @@ const navItems: NavMainItem[] = [
         url: "/central/tenants",
         permission: Permissions.tenants.view,
       },
+      {
+        title: "Domains",
+        url: "/central/domains",
+        permission: Permissions.tenants.view,
+      },
+      {
+        title: "Configs",
+        url: "/central/tenant-configs",
+        permission: Permissions.tenants.view,
+      },
     ],
   },
   {
@@ -56,6 +66,16 @@ const navItems: NavMainItem[] = [
       {
         title: "Subscriptions",
         url: "/central/subscriptions",
+        permission: Permissions.billing.view,
+      },
+      {
+        title: "Invoices",
+        url: "/central/invoices",
+        permission: Permissions.billing.view,
+      },
+      {
+        title: "Payments",
+        url: "/central/payments",
         permission: Permissions.billing.view,
       },
     ],

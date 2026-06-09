@@ -19,6 +19,11 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { getSelectAllCheckboxProps } from "@/lib/data-table/checkbox-utils"
 import {
+  announcementAudienceFilterOptions,
+  announcementTypeFilterOptions,
+} from "@/lib/data-table/announcement-filter-options"
+import { activeInactiveFilterOptions } from "@/lib/data-table/status-options"
+import {
   announcementTargetAudienceLabels,
   announcementTypeLabels,
   type AnnouncementType,
@@ -73,6 +78,7 @@ export function getAnnouncementColumns({
       size: 32,
       enableSorting: false,
       enableHiding: false,
+      enablePinning: true,
     },
     {
       id: "title",
@@ -98,6 +104,7 @@ export function getAnnouncementColumns({
         icon: TextIcon,
       },
       enableColumnFilter: true,
+      enablePinning: true,
     },
     {
       id: "type",
@@ -114,6 +121,12 @@ export function getAnnouncementColumns({
           </Badge>
         )
       },
+      meta: {
+        label: "Type",
+        variant: "multiSelect",
+        options: [...announcementTypeFilterOptions],
+      },
+      enableColumnFilter: true,
     },
     {
       id: "target_audience",
@@ -123,7 +136,10 @@ export function getAnnouncementColumns({
       ),
       cell: ({ row }) => {
         const audience = row.original.target_audience
-        const plans = row.original.target_plans ?? []
+        const planNames =
+          row.original.target_plan_names ??
+          row.original.target_plans ??
+          []
 
         return (
           <div className="flex flex-col gap-1">
@@ -131,14 +147,20 @@ export function getAnnouncementColumns({
               <UsersIcon className="size-4 text-muted-foreground" />
               {announcementTargetAudienceLabels[audience] ?? audience}
             </div>
-            {plans.length > 0 ? (
+            {planNames.length > 0 ? (
               <span className="text-xs text-muted-foreground">
-                {plans.join(", ")}
+                {planNames.join(", ")}
               </span>
             ) : null}
           </div>
         )
       },
+      meta: {
+        label: "Audience",
+        variant: "multiSelect",
+        options: [...announcementAudienceFilterOptions],
+      },
+      enableColumnFilter: true,
     },
     {
       id: "schedule",
@@ -156,22 +178,28 @@ export function getAnnouncementColumns({
     },
     {
       id: "is_active",
-      accessorKey: "is_active",
+      accessorFn: (row) => (row.is_active ? "active" : "inactive"),
       header: ({ column }: { column: Column<PlatformAnnouncement, unknown> }) => (
         <DataTableColumnHeader column={column} label="Status" />
       ),
       cell: ({ row }) =>
         row.original.is_active ? (
-          <Badge variant="outline" className="text-emerald-600">
+          <Badge variant="outline" className="capitalize text-emerald-600">
             <CheckCircle2Icon />
             Active
           </Badge>
         ) : (
-          <Badge variant="outline" className="text-muted-foreground">
+          <Badge variant="outline" className="capitalize text-muted-foreground">
             <XCircleIcon />
             Inactive
           </Badge>
         ),
+      meta: {
+        label: "Status",
+        variant: "multiSelect",
+        options: [...activeInactiveFilterOptions],
+      },
+      enableColumnFilter: true,
     },
     {
       id: "created_at",
@@ -187,6 +215,9 @@ export function getAnnouncementColumns({
         <AnnouncementRowActions announcement={row.original} onEdit={onEdit} />
       ),
       size: 32,
+      enableSorting: false,
+      enableHiding: false,
+      enablePinning: true,
     },
   ]
 }

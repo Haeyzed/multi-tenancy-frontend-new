@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/action-bar"
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { tenantService } from "@/services/central/tenant.service"
 import type { Tenant } from "@/types/central/tenant"
@@ -43,7 +44,8 @@ export function TenantActionBar({ table }: TenantActionBarProps) {
 
   async function handleBulkDelete() {
     const ids = rows.map((row) => row.original.id)
-    await tenantService.bulkDelete(ids)
+    const result = await tenantService.bulkDelete(ids)
+    toastApiMessage(result.message, "Selected tenants deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.tenants.all })
     table.toggleAllRowsSelected(false)
   }

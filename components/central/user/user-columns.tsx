@@ -17,6 +17,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { getSelectAllCheckboxProps } from "@/lib/data-table/checkbox-utils"
+import { activeInactiveFilterOptions } from "@/lib/data-table/status-options"
 import {
   countUserPermissions,
   getUserPermissionNames,
@@ -156,15 +157,15 @@ export function getUserColumns({
     },
     {
       id: "is_active",
-      accessorKey: "is_active",
+      accessorFn: (row) => (row.is_active ? "active" : "inactive"),
       header: ({ column }: { column: Column<User, unknown> }) => (
         <DataTableColumnHeader column={column} label="Status" />
       ),
-      cell: ({ cell }) => {
-        const isActive = cell.getValue<boolean>()
+      cell: ({ row }) => {
+        const isActive = row.original.is_active
 
         return (
-          <Badge variant="outline">
+          <Badge variant="outline" className="capitalize">
             {isActive ? (
               <>
                 <CheckCircle2Icon />
@@ -179,6 +180,12 @@ export function getUserColumns({
           </Badge>
         )
       },
+      meta: {
+        label: "Status",
+        variant: "multiSelect",
+        options: [...activeInactiveFilterOptions],
+      },
+      enableColumnFilter: true,
     },
     {
       id: "email_verified_at",

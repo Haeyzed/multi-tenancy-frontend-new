@@ -21,6 +21,7 @@ import {
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
 import { getRoleViewFields } from "@/lib/central/view/view-fields"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { roleService } from "@/services/central/role.service"
 import type { Role } from "@/types/central/role"
@@ -41,7 +42,8 @@ export function RoleRowActions({ role, onEdit }: RoleRowActionsProps) {
   const canDelete = can(Permissions.roles.delete)
 
   async function handleDelete() {
-    await roleService.delete(role.id)
+    const result = await roleService.delete(role.id)
+    toastApiMessage(result.message, "Role deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.roles.all })
   }
 

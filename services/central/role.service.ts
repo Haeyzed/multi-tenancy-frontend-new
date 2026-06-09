@@ -28,26 +28,26 @@ export const roleService = {
   },
 
   syncPermissionsMatrix(payload: RolePermissionsMatrixSyncPayload) {
-    return apiClient.put<RolePermissionsMatrix>(
+    return apiClient.putWithMessage<RolePermissionsMatrix>(
       "roles/permissions/matrix",
       payload,
     )
   },
 
   create(payload: RoleFormPayload) {
-    return apiClient.post<Role>("roles", payload)
+    return apiClient.postWithMessage<Role>("roles", payload)
   },
 
   update(id: number, payload: Partial<RoleFormPayload>) {
-    return apiClient.put<Role>(`roles/${id}`, payload)
+    return apiClient.putWithMessage<Role>(`roles/${id}`, payload)
   },
 
   delete(id: number) {
-    return apiClient.delete<void>(`roles/${id}`)
+    return apiClient.deleteWithMessage<void>(`roles/${id}`)
   },
 
   bulkDelete(ids: number[]) {
-    return apiClient.bulkDelete<{ deleted: number }>("roles/bulk", ids)
+    return apiClient.bulkDeleteWithMessage<{ deleted: number }>("roles/bulk", ids)
   },
 
   syncPermissions(id: number, permissionIds: number[]) {

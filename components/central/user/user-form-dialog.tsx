@@ -30,6 +30,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import { ApiError } from "@/lib/central/api/errors"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { getGroupCheckboxProps } from "@/lib/data-table/checkbox-utils"
 import { permissionService } from "@/services/central/permission.service"
@@ -140,7 +141,11 @@ export function UserFormDialog({ user, open, onOpenChange }: UserFormDialogProps
 
       return userService.create(payload)
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      toastApiMessage(
+        result.message,
+        isEditing ? "User updated successfully." : "User created successfully.",
+      )
       await queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
       onOpenChange(false)
     },

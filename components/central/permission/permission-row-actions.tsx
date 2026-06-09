@@ -21,6 +21,7 @@ import {
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
 import { getPermissionViewFields } from "@/lib/central/view/view-fields"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { permissionService } from "@/services/central/permission.service"
 import type { Permission } from "@/types/central/permission"
@@ -44,7 +45,8 @@ export function PermissionRowActions({
   const canDelete = can(Permissions.permissions.delete)
 
   async function handleDelete() {
-    await permissionService.delete(permission.id)
+    const result = await permissionService.delete(permission.id)
+    toastApiMessage(result.message, "Permission deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.permissions.all })
   }
 

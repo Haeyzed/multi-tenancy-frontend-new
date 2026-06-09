@@ -6,7 +6,20 @@ import {
 import type { Permission } from "@/types/central/permission"
 import type { Plan } from "@/types/central/plan"
 import type { Role } from "@/types/central/role"
-import type { Subscription } from "@/types/central/subscription"
+import {
+  invoiceStatusLabels,
+  type Invoice,
+} from "@/types/central/invoice"
+import {
+  paymentStatusLabels,
+  type Payment,
+} from "@/types/central/payment"
+import {
+  subscriptionStatusLabels,
+  type Subscription,
+} from "@/types/central/subscription"
+import type { Domain } from "@/types/central/domain"
+import type { TenantConfig } from "@/types/central/tenant-config"
 import { TenantStatuses, type Tenant } from "@/types/central/tenant"
 import type { User } from "@/types/central/user"
 import {
@@ -17,7 +30,7 @@ import type { RecordViewField } from "@/components/central/record-view-dialog"
 import {
   formatViewBoolean,
   formatViewDate,
-  formatViewJson,
+  formatViewHighlights,
   formatViewText,
 } from "@/lib/central/view/formatters"
 import { fromMinorUnits } from "@/components/central/plan/plan-form-utils"
@@ -99,13 +112,40 @@ export function getPlanViewFields(plan: Plan): RecordViewField[] {
     { label: "Active", value: formatViewBoolean(plan.is_active) },
     { label: "Public", value: formatViewBoolean(plan.is_public) },
     {
-      label: "Display features",
-      value: formatViewJson(plan.display_features),
-      mono: true,
+      label: "Highlights",
+      value: formatViewHighlights(plan.display_features),
       fullWidth: true,
     },
     { label: "Created", value: formatViewDate(plan.created_at) },
     { label: "Updated", value: formatViewDate(plan.updated_at) },
+  ]
+}
+
+export function getDomainViewFields(domain: Domain): RecordViewField[] {
+  return [
+    { label: "Domain", value: formatViewText(domain.domain) },
+    { label: "Tenant", value: formatViewText(domain.tenant?.name) },
+    { label: "Primary", value: formatViewBoolean(domain.is_primary) },
+    { label: "Fallback", value: formatViewBoolean(domain.is_fallback) },
+    { label: "Verified", value: formatViewBoolean(domain.verified) },
+    { label: "Created", value: formatViewDate(domain.created_at) },
+    { label: "Updated", value: formatViewDate(domain.updated_at) },
+  ]
+}
+
+export function getTenantConfigViewFields(config: TenantConfig): RecordViewField[] {
+  return [
+    { label: "Key", value: formatViewText(config.key), mono: true },
+    { label: "Tenant", value: formatViewText(config.tenant?.name) },
+    {
+      label: "Value",
+      value: config.encrypted
+        ? "Encrypted"
+        : formatViewText(config.value),
+    },
+    { label: "Encrypted", value: formatViewBoolean(config.encrypted) },
+    { label: "Created", value: formatViewDate(config.created_at) },
+    { label: "Updated", value: formatViewDate(config.updated_at) },
   ]
 }
 
@@ -131,13 +171,118 @@ export function getTenantViewFields(tenant: Tenant): RecordViewField[] {
   ]
 }
 
+export function getInvoiceViewFields(invoice: Invoice): RecordViewField[] {
+  return [
+    { label: "Invoice number", value: formatViewText(invoice.invoice_number) },
+    { label: "Tenant", value: formatViewText(invoice.tenant?.name) },
+    {
+      label: "Plan",
+      value: formatViewText(invoice.subscription?.plan?.name),
+    },
+    {
+      label: "Status",
+      value: formatViewText(invoiceStatusLabels[invoice.status]),
+    },
+    {
+      label: "Amount due",
+      value: formatViewText(
+        `${fromMinorUnits(invoice.amount_due)} ${invoice.currency}`,
+      ),
+    },
+    {
+      label: "Amount paid",
+      value: formatViewText(
+        `${fromMinorUnits(invoice.amount_paid)} ${invoice.currency}`,
+      ),
+    },
+    {
+      label: "Remaining",
+      value: formatViewText(
+        `${fromMinorUnits(invoice.amount_remaining)} ${invoice.currency}`,
+      ),
+    },
+    { label: "Due date", value: formatViewDate(invoice.due_date) },
+    { label: "Paid at", value: formatViewDate(invoice.paid_at) },
+    {
+      label: "Billing period start",
+      value: formatViewDate(invoice.billing_period_start),
+    },
+    {
+      label: "Billing period end",
+      value: formatViewDate(invoice.billing_period_end),
+    },
+    {
+      label: "Payment intent",
+      value: formatViewText(invoice.payment_intent_id),
+      mono: true,
+    },
+    { label: "Notes", value: formatViewText(invoice.notes), fullWidth: true },
+    { label: "Created", value: formatViewDate(invoice.created_at) },
+    { label: "Updated", value: formatViewDate(invoice.updated_at) },
+  ]
+}
+
+export function getPaymentViewFields(payment: Payment): RecordViewField[] {
+  return [
+    {
+      label: "Provider payment ID",
+      value: formatViewText(payment.provider_payment_id),
+      mono: true,
+      fullWidth: true,
+    },
+    { label: "Tenant", value: formatViewText(payment.tenant?.name) },
+    {
+      label: "Invoice",
+      value: formatViewText(payment.invoice?.invoice_number),
+    },
+    {
+      label: "Status",
+      value: formatViewText(paymentStatusLabels[payment.status]),
+    },
+    {
+      label: "Amount",
+      value: formatViewText(
+        `${fromMinorUnits(payment.amount)} ${payment.currency}`,
+      ),
+    },
+    {
+      label: "Refunded",
+      value: formatViewText(
+        `${fromMinorUnits(payment.refunded_amount)} ${payment.currency}`,
+      ),
+    },
+    {
+      label: "Provider",
+      value: formatViewText(payment.payment_provider),
+    },
+    {
+      label: "Payment method",
+      value: formatViewText(
+        [payment.payment_method_type, payment.payment_method_last4]
+          .filter(Boolean)
+          .join(" •••• "),
+      ),
+    },
+    {
+      label: "Failure message",
+      value: formatViewText(payment.failure_message),
+      fullWidth: true,
+    },
+    { label: "Created", value: formatViewDate(payment.created_at) },
+    { label: "Updated", value: formatViewDate(payment.updated_at) },
+  ]
+}
+
 export function getSubscriptionViewFields(
   subscription: Subscription,
 ): RecordViewField[] {
   return [
     { label: "Tenant", value: formatViewText(subscription.tenant?.name) },
     { label: "Plan", value: formatViewText(subscription.plan?.name) },
-    { label: "Status", value: formatViewText(subscription.status) },
+    {
+      label: "Status",
+      value: formatViewText(subscriptionStatusLabels[subscription.status]),
+    },
     { label: "Billing cycle", value: formatViewText(subscription.billing_cycle) },
     {
       label: "Current period start",
@@ -186,7 +331,11 @@ export function getAnnouncementViewFields(
     },
     {
       label: "Target plans",
-      value: formatViewText(announcement.target_plans?.join(", ") || "—"),
+      value: formatViewText(
+        announcement.target_plan_names?.join(", ") ||
+          announcement.target_plans?.join(", ") ||
+          "—",
+      ),
       fullWidth: true,
     },
     { label: "Active", value: formatViewBoolean(announcement.is_active) },

@@ -32,6 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { ApiError } from "@/lib/central/api/errors"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { announcementService } from "@/services/central/announcement.service"
 import { planService } from "@/services/central/plan.service"
@@ -86,7 +87,13 @@ export function AnnouncementFormDialog({
 
       return announcementService.create(payload)
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      toastApiMessage(
+        result.message,
+        isEditing
+          ? "Announcement updated successfully."
+          : "Announcement created successfully.",
+      )
       await queryClient.invalidateQueries({ queryKey: queryKeys.announcements.all })
       onOpenChange(false)
     },

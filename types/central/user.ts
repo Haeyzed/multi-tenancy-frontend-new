@@ -36,6 +36,7 @@ export interface UserListParams {
   page?: number
   per_page?: number
   search?: string
+  is_active?: string
 }
 
 export interface UserFormPayload {

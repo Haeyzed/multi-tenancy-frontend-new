@@ -9,6 +9,10 @@ import {
   TextIcon,
   XCircleIcon,
 } from "lucide-react"
+import {
+  activeInactiveFilterOptions,
+  publicPrivateFilterOptions,
+} from "@/lib/data-table/status-options"
 import * as React from "react"
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
@@ -130,15 +134,15 @@ export function getPlanColumns({
     },
     {
       id: "is_active",
-      accessorKey: "is_active",
+      accessorFn: (row) => (row.is_active ? "active" : "inactive"),
       header: ({ column }: { column: Column<Plan, unknown> }) => (
-        <DataTableColumnHeader column={column} label="Active" />
+        <DataTableColumnHeader column={column} label="Status" />
       ),
-      cell: ({ cell }) => {
-        const isActive = cell.getValue<boolean>()
+      cell: ({ row }) => {
+        const isActive = row.original.is_active
 
         return (
-          <Badge variant="outline">
+          <Badge variant="outline" className="capitalize">
             {isActive ? (
               <>
                 <CheckCircle2Icon />
@@ -153,18 +157,24 @@ export function getPlanColumns({
           </Badge>
         )
       },
+      meta: {
+        label: "Status",
+        variant: "multiSelect",
+        options: [...activeInactiveFilterOptions],
+      },
+      enableColumnFilter: true,
     },
     {
       id: "is_public",
-      accessorKey: "is_public",
+      accessorFn: (row) => (row.is_public ? "public" : "private"),
       header: ({ column }: { column: Column<Plan, unknown> }) => (
-        <DataTableColumnHeader column={column} label="Public" />
+        <DataTableColumnHeader column={column} label="Visibility" />
       ),
-      cell: ({ cell }) => {
-        const isPublic = cell.getValue<boolean>()
+      cell: ({ row }) => {
+        const isPublic = row.original.is_public
 
         return (
-          <Badge variant="outline">
+          <Badge variant="outline" className="capitalize">
             {isPublic ? (
               <>
                 <GlobeIcon />
@@ -179,6 +189,12 @@ export function getPlanColumns({
           </Badge>
         )
       },
+      meta: {
+        label: "Visibility",
+        variant: "multiSelect",
+        options: [...publicPrivateFilterOptions],
+      },
+      enableColumnFilter: true,
     },
     {
       id: "actions",

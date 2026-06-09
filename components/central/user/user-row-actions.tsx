@@ -21,6 +21,7 @@ import {
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
 import { getUserViewFields } from "@/lib/central/view/view-fields"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { userService } from "@/services/central/user.service"
 import type { User } from "@/types/central/user"
@@ -41,7 +42,8 @@ export function UserRowActions({ user, onEdit }: UserRowActionsProps) {
   const canDelete = can(Permissions.users.delete)
 
   async function handleDelete() {
-    await userService.delete(user.id)
+    const result = await userService.delete(user.id)
+    toastApiMessage(result.message, "User deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
   }
 

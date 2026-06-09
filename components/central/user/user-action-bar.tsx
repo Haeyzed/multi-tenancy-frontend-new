@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/action-bar"
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { userService } from "@/services/central/user.service"
 import type { User } from "@/types/central/user"
@@ -43,7 +44,8 @@ export function UserActionBar({ table }: UserActionBarProps) {
 
   async function handleBulkDelete() {
     const ids = rows.map((row) => row.original.id)
-    await userService.bulkDelete(ids)
+    const result = await userService.bulkDelete(ids)
+    toastApiMessage(result.message, "Selected users deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.users.all })
     table.toggleAllRowsSelected(false)
   }

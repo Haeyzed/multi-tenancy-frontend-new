@@ -191,6 +191,11 @@ export async function apiPaginatedRequest<T>(
   return payload as ApiPaginatedResponse<T>
 }
 
+export type ApiMutationResult<T> = {
+  data: T
+  message?: string
+}
+
 export const apiClient = {
   get: <T>(path: string, options?: ApiRequestOptions) =>
     apiRequest<T>(path, { ...options, method: "GET" }),
@@ -204,6 +209,24 @@ export const apiClient = {
     apiRequest<T>(path, { ...options, method: "DELETE" }),
   bulkDelete: <T>(path: string, ids: Array<string | number>, options?: ApiRequestOptions) =>
     apiRequest<T>(path, {
+      ...options,
+      method: "DELETE",
+      body: { ids },
+    }),
+  postWithMessage: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
+    apiRequestWithMessage<T>(path, { ...options, method: "POST", body }),
+  putWithMessage: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
+    apiRequestWithMessage<T>(path, { ...options, method: "PUT", body }),
+  patchWithMessage: <T>(path: string, body?: unknown, options?: ApiRequestOptions) =>
+    apiRequestWithMessage<T>(path, { ...options, method: "PATCH", body }),
+  deleteWithMessage: <T>(path: string, options?: ApiRequestOptions) =>
+    apiRequestWithMessage<T>(path, { ...options, method: "DELETE" }),
+  bulkDeleteWithMessage: <T>(
+    path: string,
+    ids: Array<string | number>,
+    options?: ApiRequestOptions,
+  ) =>
+    apiRequestWithMessage<T>(path, {
       ...options,
       method: "DELETE",
       body: { ids },

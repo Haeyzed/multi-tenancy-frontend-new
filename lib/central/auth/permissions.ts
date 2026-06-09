@@ -112,8 +112,12 @@ export function hasAllPermissions(
 export const RoutePermissions: Record<string, PermissionName | null> = {
   "/central/dashboard": Permissions.dashboard.view,
   "/central/tenants": Permissions.tenants.view,
+  "/central/domains": Permissions.tenants.view,
+  "/central/tenant-configs": Permissions.tenants.view,
   "/central/plans": Permissions.billing.view,
   "/central/subscriptions": Permissions.billing.view,
+  "/central/invoices": Permissions.billing.view,
+  "/central/payments": Permissions.billing.view,
   "/central/users": Permissions.users.view,
   "/central/roles": Permissions.roles.view,
   "/central/permissions": Permissions.permissions.view,

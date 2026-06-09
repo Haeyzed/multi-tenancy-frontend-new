@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ApiError } from "@/lib/central/api/errors"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import {
   assignmentsMapToSyncPayload,
   buildAssignmentsMap,
@@ -99,8 +100,9 @@ export function RolePermissionsMatrixDialog({
         roles: assignmentsMapToSyncPayload(matrix.roles, assignments),
       })
     },
-    onSuccess: async (data) => {
-      const nextAssignments = buildAssignmentsMap(data.roles)
+    onSuccess: async (result) => {
+      toastApiMessage(result.message, "Permissions updated successfully.")
+      const nextAssignments = buildAssignmentsMap(result.data.roles)
       setAssignments(nextAssignments)
       setSavedAssignments(cloneAssignmentsMap(nextAssignments))
       await Promise.all([

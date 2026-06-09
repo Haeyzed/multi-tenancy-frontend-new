@@ -1,7 +1,12 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { parseAsInteger, parseAsString, useQueryState } from "nuqs"
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryState,
+} from "nuqs"
 import * as React from "react"
 
 import { getTenantColumns } from "@/components/central/tenant/tenant-columns"
@@ -10,6 +15,10 @@ import { DataTable } from "@/components/data-table/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
+import {
+  FILTER_ARRAY_SEPARATOR,
+  toCommaSeparatedFilter,
+} from "@/lib/data-table/filter-params"
 import { queryKeys } from "@/lib/central/query/keys"
 import { tenantService } from "@/services/central/tenant.service"
 import type { Tenant } from "@/types/central/tenant"
@@ -26,14 +35,27 @@ export function TenantsDataTable({
   const [page] = useQueryState("page", parseAsInteger.withDefault(1))
   const [perPage] = useQueryState("perPage", parseAsInteger.withDefault(10))
   const [search] = useQueryState("name", parseAsString.withDefault(""))
+  const [status] = useQueryState(
+    "status",
+    parseAsArrayOf(parseAsString, FILTER_ARRAY_SEPARATOR).withDefault([]),
+  )
+
+  const statusFilter = toCommaSeparatedFilter(status) ?? ""
 
   const tenantsQuery = useQuery({
-    queryKey: queryKeys.tenants.list({ page, perPage, search, tenantId: selectedTenantId }),
+    queryKey: queryKeys.tenants.list({
+      page,
+      perPage,
+      search,
+      status: statusFilter,
+      tenantId: selectedTenantId,
+    }),
     queryFn: () =>
       tenantService.getPaginated({
         page,
         per_page: perPage,
         search: search || undefined,
+        status: toCommaSeparatedFilter(status),
       }),
   })
 
@@ -54,7 +76,7 @@ export function TenantsDataTable({
     return (
       <DataTableSkeleton
         columnCount={columns.length}
-        filterCount={1}
+        filterCount={2}
         rowCount={perPage}
       />
     )

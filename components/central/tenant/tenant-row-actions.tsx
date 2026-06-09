@@ -3,13 +3,18 @@
 import { useQueryClient } from "@tanstack/react-query"
 import {
   EyeIcon,
+  GlobeIcon,
   MoreHorizontalIcon,
   PencilIcon,
+  SettingsIcon,
+  SparklesIcon,
   Trash2Icon,
 } from "lucide-react"
+import { useRouter } from "next/navigation"
 import * as React from "react"
 
 import { DeleteConfirmDialog } from "@/components/central/delete-confirm-dialog"
+import { TenantFeaturesDialog } from "@/components/central/tenant/tenant-features-dialog"
 import { RecordViewDialog } from "@/components/central/record-view-dialog"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,9 +26,11 @@ import {
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
 import { getTenantViewFields } from "@/lib/central/view/view-fields"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { tenantService } from "@/services/central/tenant.service"
 import type { Tenant } from "@/types/central/tenant"
+import { useTenant } from "@/providers/central/tenant-provider"
 
 interface TenantRowActionsProps {
   tenant: Tenant
@@ -31,9 +38,12 @@ interface TenantRowActionsProps {
 }
 
 export function TenantRowActions({ tenant, onEdit }: TenantRowActionsProps) {
+  const router = useRouter()
   const queryClient = useQueryClient()
+  const { selectTenant } = useTenant()
   const { can } = usePermissions()
   const [viewOpen, setViewOpen] = React.useState(false)
+  const [featuresOpen, setFeaturesOpen] = React.useState(false)
   const [deleteOpen, setDeleteOpen] = React.useState(false)
 
   const canView = can(Permissions.tenants.view)
@@ -41,7 +51,8 @@ export function TenantRowActions({ tenant, onEdit }: TenantRowActionsProps) {
   const canDelete = can(Permissions.tenants.delete)
 
   async function handleDelete() {
-    await tenantService.delete(tenant.id)
+    const result = await tenantService.delete(tenant.id)
+    toastApiMessage(result.message, "Tenant deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.tenants.all })
   }
 
@@ -73,6 +84,34 @@ export function TenantRowActions({ tenant, onEdit }: TenantRowActionsProps) {
               Edit
             </DropdownMenuItem>
           ) : null}
+          {canView ? (
+            <DropdownMenuItem onClick={() => setFeaturesOpen(true)}>
+              <SparklesIcon />
+              View features
+            </DropdownMenuItem>
+          ) : null}
+          {canView ? (
+            <DropdownMenuItem
+              onClick={() => {
+                selectTenant(tenant.id)
+                router.push("/central/domains")
+              }}
+            >
+              <GlobeIcon />
+              Manage domains
+            </DropdownMenuItem>
+          ) : null}
+          {canView ? (
+            <DropdownMenuItem
+              onClick={() => {
+                selectTenant(tenant.id)
+                router.push("/central/tenant-configs")
+              }}
+            >
+              <SettingsIcon />
+              Manage configs
+            </DropdownMenuItem>
+          ) : null}
           {canDelete ? (
             <DropdownMenuItem
               variant="destructive"
@@ -92,6 +131,14 @@ export function TenantRowActions({ tenant, onEdit }: TenantRowActionsProps) {
           title={tenant.name}
           description="Tenant details"
           fields={getTenantViewFields(tenant)}
+        />
+      ) : null}
+
+      {canView ? (
+        <TenantFeaturesDialog
+          tenant={tenant}
+          open={featuresOpen}
+          onOpenChange={setFeaturesOpen}
         />
       ) : null}
 

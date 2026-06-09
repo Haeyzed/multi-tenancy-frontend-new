@@ -46,7 +46,9 @@ export function MetricCardItem({
         </div>
 
         <div className="space-y-2">
-          <p className="app-metric-card-value">{formatMetricValue(card.value)}</p>
+          <p className="app-metric-card-value">
+            {formatMetricValue(card.value, card.key)}
+          </p>
           {resolvedModuleLabel ? (
             <span className="app-metric-card-chip">{resolvedModuleLabel}</span>
           ) : null}

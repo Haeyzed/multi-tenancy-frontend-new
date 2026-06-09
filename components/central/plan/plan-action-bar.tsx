@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/action-bar"
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { planService } from "@/services/central/plan.service"
 import type { Plan } from "@/types/central/plan"
@@ -43,7 +44,8 @@ export function PlanActionBar({ table }: PlanActionBarProps) {
 
   async function handleBulkDelete() {
     const ids = rows.map((row) => row.original.id)
-    await planService.bulkDelete(ids)
+    const result = await planService.bulkDelete(ids)
+    toastApiMessage(result.message, "Selected plans deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.plans.all })
     table.toggleAllRowsSelected(false)
   }

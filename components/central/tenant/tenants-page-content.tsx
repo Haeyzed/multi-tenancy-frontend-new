@@ -4,6 +4,7 @@ import { PlusIcon } from "lucide-react"
 import * as React from "react"
 
 import { Can } from "@/components/central/can"
+import { ExpiringTenantsAlert } from "@/components/central/tenant/expiring-tenants-alert"
 import { TenantFormDialog } from "@/components/central/tenant/tenant-form-dialog"
 import { TenantMetricCards } from "@/components/central/tenant/tenant-metric-cards"
 import { TenantsDataTable } from "@/components/central/tenant/tenants-data-table"
@@ -41,6 +42,8 @@ export function TenantsPageContent() {
       </PageHeader>
 
       <TenantMetricCards />
+
+      <ExpiringTenantsAlert />
 
       <TenantsDataTable onEdit={openEdit} />
 

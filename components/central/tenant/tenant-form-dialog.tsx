@@ -31,6 +31,7 @@ import {
   type TenantFormState,
 } from "@/lib/central/tenant/tenant-form-utils"
 import { ApiError } from "@/lib/central/api/errors"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { planService } from "@/services/central/plan.service"
 import { tenantService } from "@/services/central/tenant.service"
@@ -101,7 +102,11 @@ export function TenantFormDialog({
 
       return tenantService.create(payload)
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      toastApiMessage(
+        result.message,
+        isEditing ? "Tenant updated successfully." : "Tenant created successfully.",
+      )
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.tenants.all }),
         queryClient.invalidateQueries({ queryKey: queryKeys.tenants.options() }),

@@ -21,6 +21,7 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog"
 import { ApiError } from "@/lib/central/api/errors"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { permissionService } from "@/services/central/permission.service"
 import type { Permission } from "@/types/central/permission"
@@ -88,7 +89,13 @@ export function PermissionFormDialog({
 
       return permissionService.create(payload)
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      toastApiMessage(
+        result.message,
+        isEditing
+          ? "Permission updated successfully."
+          : "Permission created successfully.",
+      )
       await queryClient.invalidateQueries({ queryKey: queryKeys.permissions.all })
       onOpenChange(false)
     },

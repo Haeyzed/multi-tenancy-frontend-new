@@ -1,7 +1,12 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { parseAsInteger, parseAsString, useQueryState } from "nuqs"
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryState,
+} from "nuqs"
 import * as React from "react"
 
 import { AnnouncementActionBar } from "@/components/central/announcement/announcement-action-bar"
@@ -10,6 +15,10 @@ import { DataTable } from "@/components/data-table/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
+import {
+  FILTER_ARRAY_SEPARATOR,
+  toCommaSeparatedFilter,
+} from "@/lib/data-table/filter-params"
 import { queryKeys } from "@/lib/central/query/keys"
 import { announcementService } from "@/services/central/announcement.service"
 import type { PlatformAnnouncement } from "@/types/central/announcement"
@@ -23,15 +32,41 @@ export function AnnouncementsDataTable({ onEdit }: AnnouncementsDataTableProps) 
 
   const [page] = useQueryState("page", parseAsInteger.withDefault(1))
   const [perPage] = useQueryState("perPage", parseAsInteger.withDefault(10))
-  const [search] = useQueryState("name", parseAsString.withDefault(""))
+  const [search] = useQueryState("title", parseAsString.withDefault(""))
+  const [isActive] = useQueryState(
+    "is_active",
+    parseAsArrayOf(parseAsString, FILTER_ARRAY_SEPARATOR).withDefault([]),
+  )
+  const [type] = useQueryState(
+    "type",
+    parseAsArrayOf(parseAsString, FILTER_ARRAY_SEPARATOR).withDefault([]),
+  )
+  const [targetAudience] = useQueryState(
+    "target_audience",
+    parseAsArrayOf(parseAsString, FILTER_ARRAY_SEPARATOR).withDefault([]),
+  )
+
+  const isActiveFilter = toCommaSeparatedFilter(isActive) ?? ""
+  const typeFilter = toCommaSeparatedFilter(type) ?? ""
+  const targetAudienceFilter = toCommaSeparatedFilter(targetAudience) ?? ""
 
   const announcementsQuery = useQuery({
-    queryKey: queryKeys.announcements.list({ page, perPage, search }),
+    queryKey: queryKeys.announcements.list({
+      page,
+      perPage,
+      search,
+      isActive: isActiveFilter,
+      type: typeFilter,
+      targetAudience: targetAudienceFilter,
+    }),
     queryFn: () =>
       announcementService.getPaginated({
         page,
         per_page: perPage,
         search: search || undefined,
+        is_active: toCommaSeparatedFilter(isActive),
+        type: toCommaSeparatedFilter(type),
+        target_audience: toCommaSeparatedFilter(targetAudience),
       }),
   })
 
@@ -43,7 +78,7 @@ export function AnnouncementsDataTable({ onEdit }: AnnouncementsDataTableProps) 
     columns,
     pageCount,
     initialState: {
-      columnPinning: { right: ["actions"] },
+      columnPinning: { left: ["select", "title"], right: ["actions"] },
     },
     getRowId: (row) => String(row.id),
   })
@@ -52,7 +87,7 @@ export function AnnouncementsDataTable({ onEdit }: AnnouncementsDataTableProps) 
     return (
       <DataTableSkeleton
         columnCount={columns.length}
-        filterCount={1}
+        filterCount={4}
         rowCount={perPage}
       />
     )

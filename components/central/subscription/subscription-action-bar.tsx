@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/action-bar"
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { subscriptionService } from "@/services/central/subscription.service"
 import type { Subscription } from "@/types/central/subscription"
@@ -43,7 +44,8 @@ export function SubscriptionActionBar({ table }: SubscriptionActionBarProps) {
 
   async function handleBulkDelete() {
     const ids = rows.map((row) => row.original.id)
-    await subscriptionService.bulkDelete(ids)
+    const result = await subscriptionService.bulkDelete(ids)
+    toastApiMessage(result.message, "Selected subscriptions deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.subscriptions.all })
     table.toggleAllRowsSelected(false)
   }

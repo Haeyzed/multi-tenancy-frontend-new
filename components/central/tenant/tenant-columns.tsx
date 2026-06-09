@@ -30,6 +30,14 @@ const statusConfig: Record<
   [TenantStatuses.Cancelled]: { label: "Cancelled", icon: BanIcon },
 }
 
+const tenantStatusFilterOptions = Object.entries(statusConfig).map(
+  ([value, config]) => ({
+    label: config.label,
+    value,
+    icon: config.icon,
+  }),
+)
+
 export function getTenantColumns({
   onEdit,
 }: {
@@ -118,6 +126,12 @@ export function getTenantColumns({
           </Badge>
         )
       },
+      meta: {
+        label: "Status",
+        variant: "multiSelect",
+        options: tenantStatusFilterOptions,
+      },
+      enableColumnFilter: true,
     },
     {
       id: "owner_name",

@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { formatMoneyFromMinor } from "@/lib/central/billing/format-money"
 import type { Subscription, SubscriptionInvoice } from "@/types/central/subscription"
 
 interface SubscriptionInvoicesDialogProps {
@@ -35,11 +36,7 @@ function formatDate(value: string | null) {
 }
 
 function formatAmount(amount: number, currency: string) {
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 2,
-  }).format(amount)
+  return formatMoneyFromMinor(amount, currency)
 }
 
 function InvoiceStatusBadge({ status }: { status: string }) {

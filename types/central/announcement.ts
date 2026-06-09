@@ -24,6 +24,7 @@ export interface PlatformAnnouncement {
   type: AnnouncementType
   target_audience: AnnouncementTargetAudience
   target_plans: string[] | null
+  target_plan_names?: string[] | null
   is_active: boolean
   starts_at: string | null
   ends_at: string | null
@@ -46,7 +47,12 @@ export interface AnnouncementListParams {
   page?: number
   per_page?: number
   search?: string
+  is_active?: string
+  type?: string
+  target_audience?: string
 }
+
+export type { MetricCard } from "@/types/central/tenant"
 
 export const announcementTypeLabels: Record<AnnouncementType, string> = {
   maintenance: "Maintenance",

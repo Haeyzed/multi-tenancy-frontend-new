@@ -56,6 +56,22 @@ export function planToFormPayload(plan: Plan): PlanFormPayload {
   }
 }
 
+export function extractHighlights(features: Record<string, unknown>): string[] {
+  const highlights = features.highlights
+
+  if (!Array.isArray(highlights)) {
+    return []
+  }
+
+  return highlights.filter((item): item is string => typeof item === "string")
+}
+
+export function buildFeaturesFromHighlights(highlights: string[]): Record<string, unknown> {
+  return {
+    highlights: highlights.map((item) => item.trim()).filter(Boolean),
+  }
+}
+
 export function serializeFeaturesJson(features: Record<string, unknown>): string {
   return JSON.stringify(features, null, 2)
 }
@@ -88,7 +104,7 @@ export interface PlanFormState {
   currency: string
   trialDays: string
   sortOrder: string
-  featuresJson: string
+  highlights: string[]
 }
 
 export function formStateFromPlan(plan: Plan | null): PlanFormState {
@@ -107,7 +123,9 @@ export function formStateFromPlan(plan: Plan | null): PlanFormState {
       currency: defaults.currency,
       trialDays: String(defaults.trial_days),
       sortOrder: String(defaults.sort_order ?? 0),
-      featuresJson: serializeFeaturesJson(defaults.features),
+      highlights: extractHighlights(defaults.features).length
+        ? extractHighlights(defaults.features)
+        : [""],
     }
   }
 
@@ -125,7 +143,10 @@ export function formStateFromPlan(plan: Plan | null): PlanFormState {
     currency: payload.currency,
     trialDays: String(payload.trial_days),
     sortOrder: String(payload.sort_order ?? 0),
-    featuresJson: serializeFeaturesJson(payload.features),
+    highlights: (() => {
+      const items = extractHighlights(payload.features)
+      return items.length > 0 ? items : [""]
+    })(),
   }
 }
 
@@ -142,6 +163,6 @@ export function formStateToPayload(state: PlanFormState): PlanFormPayload {
     currency: state.currency.trim().toUpperCase(),
     trial_days: Number.parseInt(state.trialDays, 10) || 0,
     sort_order: Number.parseInt(state.sortOrder, 10) || 0,
-    features: parseFeaturesJson(state.featuresJson),
+    features: buildFeaturesFromHighlights(state.highlights),
   }
 }

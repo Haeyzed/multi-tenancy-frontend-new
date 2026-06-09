@@ -1,13 +1,12 @@
 "use client"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Loader2Icon } from "lucide-react"
+import { Loader2Icon, PlusIcon, Trash2Icon } from "lucide-react"
 import * as React from "react"
 
 import {
   formStateFromPlan,
   formStateToPayload,
-  parseFeaturesJson,
   slugifyName,
   type PlanFormState,
 } from "@/components/central/plan/plan-form-utils"
@@ -30,6 +29,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { ApiError } from "@/lib/central/api/errors"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { planService } from "@/services/central/plan.service"
 import type { Plan } from "@/types/central/plan"
@@ -65,7 +65,11 @@ export function PlanFormDialog({ plan, open, onOpenChange }: PlanFormDialogProps
 
       return planService.create(payload)
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      toastApiMessage(
+        result.message,
+        isEditing ? "Plan updated successfully." : "Plan created successfully.",
+      )
       await queryClient.invalidateQueries({ queryKey: queryKeys.plans.all })
       onOpenChange(false)
     },
@@ -89,16 +93,35 @@ export function PlanFormDialog({ plan, open, onOpenChange }: PlanFormDialogProps
     }))
   }
 
+  function updateHighlight(index: number, value: string) {
+    setForm((current) => ({
+      ...current,
+      highlights: current.highlights.map((item, itemIndex) =>
+        itemIndex === index ? value : item,
+      ),
+    }))
+  }
+
+  function addHighlight() {
+    setForm((current) => ({
+      ...current,
+      highlights: [...current.highlights, ""],
+    }))
+  }
+
+  function removeHighlight(index: number) {
+    setForm((current) => ({
+      ...current,
+      highlights:
+        current.highlights.length === 1
+          ? [""]
+          : current.highlights.filter((_, itemIndex) => itemIndex !== index),
+    }))
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setErrorMessage(null)
-
-    try {
-      parseFeaturesJson(form.featuresJson)
-    } catch {
-      setErrorMessage("Display features must be valid JSON object.")
-      return
-    }
 
     try {
       await mutation.mutateAsync(form)
@@ -282,18 +305,43 @@ export function PlanFormDialog({ plan, open, onOpenChange }: PlanFormDialogProps
             </div>
 
             <Field>
-              <FieldLabel htmlFor="plan-features">Display features (JSON)</FieldLabel>
-              <Textarea
-                id="plan-features"
-                value={form.featuresJson}
-                onChange={(event) => updateField("featuresJson", event.target.value)}
-                rows={6}
-                className="font-mono text-xs"
-                required
-              />
+              <FieldLabel>Display features</FieldLabel>
+              <div className="flex flex-col gap-2">
+                {form.highlights.map((highlight, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input
+                      value={highlight}
+                      onChange={(event) =>
+                        updateHighlight(index, event.target.value)
+                      }
+                      placeholder="Up to 100 products"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon-sm"
+                      aria-label="Remove highlight"
+                      onClick={() => removeHighlight(index)}
+                      disabled={form.highlights.length === 1}
+                    >
+                      <Trash2Icon />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-fit"
+                  onClick={addHighlight}
+                >
+                  <PlusIcon />
+                  Add highlight
+                </Button>
+              </div>
               <FieldDescription>
-                Marketing copy sent as the API `features` field, e.g.{" "}
-                {`{"highlights":["Up to 100 products","API access"]}`}
+                Marketing bullet points sent as the API `features.highlights`
+                field.
               </FieldDescription>
             </Field>
           </FieldGroup>

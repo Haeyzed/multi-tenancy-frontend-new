@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/action-bar"
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { permissionService } from "@/services/central/permission.service"
 import type { Permission } from "@/types/central/permission"
@@ -43,7 +44,8 @@ export function PermissionActionBar({ table }: PermissionActionBarProps) {
 
   async function handleBulkDelete() {
     const ids = rows.map((row) => row.original.id)
-    await permissionService.bulkDelete(ids)
+    const result = await permissionService.bulkDelete(ids)
+    toastApiMessage(result.message, "Selected permissions deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.permissions.all })
     table.toggleAllRowsSelected(false)
   }

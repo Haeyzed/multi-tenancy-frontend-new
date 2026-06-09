@@ -17,14 +17,14 @@ export const planFeatureService = {
   },
 
   create(payload: PlanFeatureFormPayload) {
-    return apiClient.post<PlanFeature>("plan-features", payload)
+    return apiClient.postWithMessage<PlanFeature>("plan-features", payload)
   },
 
   update(id: number, payload: Partial<PlanFeatureFormPayload>) {
-    return apiClient.put<PlanFeature>(`plan-features/${id}`, payload)
+    return apiClient.putWithMessage<PlanFeature>(`plan-features/${id}`, payload)
   },
 
   delete(id: number) {
-    return apiClient.delete<void>(`plan-features/${id}`)
+    return apiClient.deleteWithMessage<void>(`plan-features/${id}`)
   },
 }

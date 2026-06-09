@@ -12,6 +12,15 @@ export const SubscriptionStatuses = {
 export type SubscriptionStatus =
   (typeof SubscriptionStatuses)[keyof typeof SubscriptionStatuses]
 
+export const subscriptionStatusLabels: Record<SubscriptionStatus, string> = {
+  trialing: "Trialing",
+  active: "Active",
+  past_due: "Past Due",
+  cancelled: "Cancelled",
+  paused: "Paused",
+  expired: "Expired",
+}
+
 export const BillingCycles = {
   Monthly: "monthly",
   Yearly: "yearly",
@@ -96,6 +105,7 @@ export interface SubscriptionListParams {
   page?: number
   per_page?: number
   search?: string
+  status?: string
 }
 
 export type { MetricCard }

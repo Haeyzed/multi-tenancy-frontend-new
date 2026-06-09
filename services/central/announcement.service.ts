@@ -2,6 +2,7 @@ import { apiClient, apiPaginatedRequest } from "@/lib/central/api/client"
 import type {
   AnnouncementFormPayload,
   AnnouncementListParams,
+  MetricCard,
   PlatformAnnouncement,
 } from "@/types/central/announcement"
 
@@ -12,23 +13,33 @@ export const announcementService = {
     })
   },
 
+  getMetrics() {
+    return apiClient.get<{ cards: MetricCard[] }>("announcements/metrics/cards")
+  },
+
   get(id: number) {
     return apiClient.get<PlatformAnnouncement>(`announcements/${id}`)
   },
 
   create(payload: AnnouncementFormPayload) {
-    return apiClient.post<PlatformAnnouncement>("announcements", payload)
+    return apiClient.postWithMessage<PlatformAnnouncement>("announcements", payload)
   },
 
   update(id: number, payload: Partial<AnnouncementFormPayload>) {
-    return apiClient.put<PlatformAnnouncement>(`announcements/${id}`, payload)
+    return apiClient.putWithMessage<PlatformAnnouncement>(
+      `announcements/${id}`,
+      payload,
+    )
   },
 
   delete(id: number) {
-    return apiClient.delete<void>(`announcements/${id}`)
+    return apiClient.deleteWithMessage<void>(`announcements/${id}`)
   },
 
   bulkDelete(ids: number[]) {
-    return apiClient.bulkDelete<{ deleted: number }>("announcements/bulk", ids)
+    return apiClient.bulkDeleteWithMessage<{ deleted: number }>(
+      "announcements/bulk",
+      ids,
+    )
   },
 }

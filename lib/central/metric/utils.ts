@@ -1,3 +1,5 @@
+import { formatBillingMetricValue } from "@/lib/central/billing/format-money"
+
 export type MetricCardTheme =
   | "brand"
   | "billing"
@@ -101,6 +103,13 @@ export function getMetricModuleLabel(module?: string): string | undefined {
   return moduleLabels[module]
 }
 
-export function formatMetricValue(value: number | string): string {
+export function formatMetricValue(
+  value: number | string,
+  key?: string,
+): string {
+  if (key) {
+    return formatBillingMetricValue(key, value)
+  }
+
   return typeof value === "number" ? value.toLocaleString() : value
 }

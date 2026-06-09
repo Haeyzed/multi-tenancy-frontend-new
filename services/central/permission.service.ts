@@ -16,18 +16,21 @@ export const permissionService = {
   },
 
   create(payload: PermissionFormPayload) {
-    return apiClient.post<Permission>("permissions", payload)
+    return apiClient.postWithMessage<Permission>("permissions", payload)
   },
 
   update(id: number, payload: Partial<PermissionFormPayload>) {
-    return apiClient.put<Permission>(`permissions/${id}`, payload)
+    return apiClient.putWithMessage<Permission>(`permissions/${id}`, payload)
   },
 
   delete(id: number) {
-    return apiClient.delete<void>(`permissions/${id}`)
+    return apiClient.deleteWithMessage<void>(`permissions/${id}`)
   },
 
   bulkDelete(ids: number[]) {
-    return apiClient.bulkDelete<{ deleted: number }>("permissions/bulk", ids)
+    return apiClient.bulkDeleteWithMessage<{ deleted: number }>(
+      "permissions/bulk",
+      ids,
+    )
   },
 }

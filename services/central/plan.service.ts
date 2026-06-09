@@ -21,18 +21,18 @@ export const planService = {
   },
 
   create(payload: PlanFormPayload) {
-    return apiClient.post<Plan>("plans", payload)
+    return apiClient.postWithMessage<Plan>("plans", payload)
   },
 
   update(id: string, payload: Partial<PlanFormPayload>) {
-    return apiClient.put<Plan>(`plans/${id}`, payload)
+    return apiClient.putWithMessage<Plan>(`plans/${id}`, payload)
   },
 
   delete(id: string) {
-    return apiClient.delete<void>(`plans/${id}`)
+    return apiClient.deleteWithMessage<void>(`plans/${id}`)
   },
 
   bulkDelete(ids: string[]) {
-    return apiClient.bulkDelete<{ deleted: number }>("plans/bulk", ids)
+    return apiClient.bulkDeleteWithMessage<{ deleted: number }>("plans/bulk", ids)
   },
 }

@@ -21,6 +21,7 @@ import {
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
 import { getAnnouncementViewFields } from "@/lib/central/view/view-fields"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { announcementService } from "@/services/central/announcement.service"
 import type { PlatformAnnouncement } from "@/types/central/announcement"
@@ -43,7 +44,8 @@ export function AnnouncementRowActions({
   const canManage = can(Permissions.platform.manage)
 
   async function handleDelete() {
-    await announcementService.delete(announcement.id)
+    const result = await announcementService.delete(announcement.id)
+    toastApiMessage(result.message, "Announcement deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.announcements.all })
   }
 

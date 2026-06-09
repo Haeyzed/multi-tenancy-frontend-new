@@ -21,6 +21,7 @@ import {
   ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog"
 import { ApiError } from "@/lib/central/api/errors"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { roleService } from "@/services/central/role.service"
 import type { Role } from "@/types/central/role"
@@ -78,7 +79,11 @@ export function RoleFormDialog({ role, open, onOpenChange }: RoleFormDialogProps
 
       return roleService.create(payload)
     },
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      toastApiMessage(
+        result.message,
+        isEditing ? "Role updated successfully." : "Role created successfully.",
+      )
       await queryClient.invalidateQueries({ queryKey: queryKeys.roles.all })
       onOpenChange(false)
     },

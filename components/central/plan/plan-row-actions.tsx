@@ -23,6 +23,7 @@ import {
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
 import { getPlanViewFields } from "@/lib/central/view/view-fields"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { planService } from "@/services/central/plan.service"
 import type { Plan } from "@/types/central/plan"
@@ -43,7 +44,8 @@ export function PlanRowActions({ plan, onEdit }: PlanRowActionsProps) {
   const canManage = can(Permissions.billing.manage)
 
   async function handleDelete() {
-    await planService.delete(plan.id)
+    const result = await planService.delete(plan.id)
+    toastApiMessage(result.message, "Plan deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.plans.all })
   }
 

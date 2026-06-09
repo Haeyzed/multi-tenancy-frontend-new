@@ -23,8 +23,10 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { getSelectAllCheckboxProps } from "@/lib/data-table/checkbox-utils"
+import { subscriptionStatusFilterOptions } from "@/lib/data-table/billing-filter-options"
 import {
   SubscriptionStatuses,
+  subscriptionStatusLabels,
   type Subscription,
   type SubscriptionStatus,
 } from "@/types/central/subscription"
@@ -33,12 +35,30 @@ const statusConfig: Record<
   SubscriptionStatus,
   { label: string; icon: React.ComponentType<{ className?: string }> }
 > = {
-  [SubscriptionStatuses.Active]: { label: "Active", icon: CheckCircle2Icon },
-  [SubscriptionStatuses.Trialing]: { label: "Trialing", icon: SparklesIcon },
-  [SubscriptionStatuses.PastDue]: { label: "Past Due", icon: AlertCircleIcon },
-  [SubscriptionStatuses.Cancelled]: { label: "Cancelled", icon: BanIcon },
-  [SubscriptionStatuses.Paused]: { label: "Paused", icon: PauseCircleIcon },
-  [SubscriptionStatuses.Expired]: { label: "Expired", icon: ClockIcon },
+  [SubscriptionStatuses.Active]: {
+    label: subscriptionStatusLabels.active,
+    icon: CheckCircle2Icon,
+  },
+  [SubscriptionStatuses.Trialing]: {
+    label: subscriptionStatusLabels.trialing,
+    icon: SparklesIcon,
+  },
+  [SubscriptionStatuses.PastDue]: {
+    label: subscriptionStatusLabels.past_due,
+    icon: AlertCircleIcon,
+  },
+  [SubscriptionStatuses.Cancelled]: {
+    label: subscriptionStatusLabels.cancelled,
+    icon: BanIcon,
+  },
+  [SubscriptionStatuses.Paused]: {
+    label: subscriptionStatusLabels.paused,
+    icon: PauseCircleIcon,
+  },
+  [SubscriptionStatuses.Expired]: {
+    label: subscriptionStatusLabels.expired,
+    icon: ClockIcon,
+  },
 }
 
 function formatDate(value: string | null) {
@@ -91,6 +111,13 @@ export function getSubscriptionColumns(): ColumnDef<Subscription>[] {
           ) : null}
         </div>
       ),
+      meta: {
+        label: "Tenant",
+        placeholder: "Search tenants...",
+        variant: "text",
+        icon: TextIcon,
+      },
+      enableColumnFilter: true,
       enablePinning: true,
     },
     {
@@ -112,10 +139,9 @@ export function getSubscriptionColumns(): ColumnDef<Subscription>[] {
         )
       },
       meta: {
-        label: "Search",
-        placeholder: "Search subscriptions...",
-        variant: "text",
-        icon: TextIcon,
+        label: "Status",
+        variant: "multiSelect",
+        options: [...subscriptionStatusFilterOptions],
       },
       enableColumnFilter: true,
     },

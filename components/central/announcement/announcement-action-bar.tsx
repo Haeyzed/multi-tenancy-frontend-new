@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/action-bar"
 import { usePermissions } from "@/hooks/use-permissions"
 import { Permissions } from "@/lib/central/auth/permissions"
+import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
 import { announcementService } from "@/services/central/announcement.service"
 import type { PlatformAnnouncement } from "@/types/central/announcement"
@@ -43,7 +44,8 @@ export function AnnouncementActionBar({ table }: AnnouncementActionBarProps) {
 
   async function handleBulkDelete() {
     const ids = rows.map((row) => row.original.id)
-    await announcementService.bulkDelete(ids)
+    const result = await announcementService.bulkDelete(ids)
+    toastApiMessage(result.message, "Selected announcements deleted successfully.")
     await queryClient.invalidateQueries({ queryKey: queryKeys.announcements.all })
     table.toggleAllRowsSelected(false)
   }

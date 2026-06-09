@@ -5,6 +5,7 @@ import * as React from "react"
 
 import { Can } from "@/components/central/can"
 import { AnnouncementFormDialog } from "@/components/central/announcement/announcement-form-dialog"
+import { AnnouncementMetricCards } from "@/components/central/announcement/announcement-metric-cards"
 import { AnnouncementsDataTable } from "@/components/central/announcement/announcements-data-table"
 import { PageHeader } from "@/components/layout/page-header"
 import { Button } from "@/components/ui/button"
@@ -39,6 +40,8 @@ export function AnnouncementsPageContent() {
           </Button>
         </Can>
       </PageHeader>
+
+      <AnnouncementMetricCards />
 
       <AnnouncementsDataTable onEdit={openEdit} />
 

@@ -25,6 +25,30 @@ export function formatViewText(value: string | number | null | undefined): strin
   return String(value)
 }
 
+export function formatViewHighlights(
+  features: Record<string, unknown> | null | undefined,
+): string {
+  if (!features) {
+    return "—"
+  }
+
+  const highlights = features.highlights
+
+  if (!Array.isArray(highlights) || highlights.length === 0) {
+    return "—"
+  }
+
+  const items = highlights.filter(
+    (item): item is string => typeof item === "string" && item.trim() !== "",
+  )
+
+  if (items.length === 0) {
+    return "—"
+  }
+
+  return items.map((item) => `• ${item}`).join("\n")
+}
+
 export function formatViewJson(value: unknown): string {
   if (value == null) {
     return "—"
