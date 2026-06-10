@@ -15,8 +15,10 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import {
+  ActivityIcon,
   Building2Icon,
   CreditCardIcon,
+  HeadphonesIcon,
   LayoutDashboardIcon,
   MegaphoneIcon,
   ShieldIcon,
@@ -50,6 +52,11 @@ const navItems: NavMainItem[] = [
         url: "/central/tenant-configs",
         permission: Permissions.tenants.view,
       },
+      {
+        title: "Impersonation",
+        url: "/central/impersonation-tokens",
+        permission: Permissions.impersonation.use,
+      },
     ],
   },
   {
@@ -76,6 +83,11 @@ const navItems: NavMainItem[] = [
       {
         title: "Payments",
         url: "/central/payments",
+        permission: Permissions.billing.view,
+      },
+      {
+        title: "Usage records",
+        url: "/central/usage-records",
         permission: Permissions.billing.view,
       },
     ],
@@ -112,6 +124,57 @@ const navItems: NavMainItem[] = [
         title: "Announcements",
         url: "/central/announcements",
         permission: Permissions.platform.view,
+      },
+      {
+        title: "Changelog",
+        url: "/central/changelog",
+        permission: Permissions.platform.view,
+      },
+      {
+        title: "Activity log",
+        url: "/central/activity-log",
+        permission: Permissions.platform.view,
+      },
+    ],
+  },
+  {
+    title: "Support",
+    url: "/central/support-tickets",
+    icon: <HeadphonesIcon />,
+    permission: Permissions.support.view,
+    items: [
+      {
+        title: "Tickets",
+        url: "/central/support-tickets",
+        permission: Permissions.support.view,
+      },
+    ],
+  },
+  {
+    title: "Monitoring",
+    url: "/central/health-checks",
+    icon: <ActivityIcon />,
+    permission: Permissions.monitoring.view,
+    items: [
+      {
+        title: "Health checks",
+        url: "/central/health-checks",
+        permission: Permissions.monitoring.view,
+      },
+      {
+        title: "Error logs",
+        url: "/central/error-logs",
+        permission: Permissions.monitoring.view,
+      },
+      {
+        title: "API keys",
+        url: "/central/api-keys",
+        permission: Permissions.apiKeys.view,
+      },
+      {
+        title: "Tenant metrics",
+        url: "/central/tenant-metrics",
+        permission: Permissions.monitoring.view,
       },
     ],
   },

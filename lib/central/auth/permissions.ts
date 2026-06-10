@@ -114,14 +114,23 @@ export const RoutePermissions: Record<string, PermissionName | null> = {
   "/central/tenants": Permissions.tenants.view,
   "/central/domains": Permissions.tenants.view,
   "/central/tenant-configs": Permissions.tenants.view,
+  "/central/api-keys": Permissions.apiKeys.view,
+  "/central/health-checks": Permissions.monitoring.view,
+  "/central/error-logs": Permissions.monitoring.view,
+  "/central/tenant-metrics": Permissions.monitoring.view,
+  "/central/support-tickets": Permissions.support.view,
   "/central/plans": Permissions.billing.view,
   "/central/subscriptions": Permissions.billing.view,
   "/central/invoices": Permissions.billing.view,
   "/central/payments": Permissions.billing.view,
+  "/central/usage-records": Permissions.billing.view,
   "/central/users": Permissions.users.view,
   "/central/roles": Permissions.roles.view,
   "/central/permissions": Permissions.permissions.view,
   "/central/announcements": Permissions.platform.view,
+  "/central/changelog": Permissions.platform.view,
+  "/central/activity-log": Permissions.platform.view,
+  "/central/impersonation-tokens": Permissions.impersonation.use,
 }
 
 export function getRoutePermission(pathname: string): PermissionName | null {

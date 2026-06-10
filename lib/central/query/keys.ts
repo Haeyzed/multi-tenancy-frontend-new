@@ -133,4 +133,108 @@ export const queryKeys = {
       tenantId: string | null
     }) => [...queryKeys.tenantConfigs.all, "list", params] as const,
   },
+  apiKeys: {
+    all: ["api-keys"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      isActive: string
+      tenantId: string | null
+    }) => [...queryKeys.apiKeys.all, "list", params] as const,
+    metrics: (tenantId: string | null) =>
+      [...queryKeys.apiKeys.all, "metrics", tenantId] as const,
+  },
+  healthChecks: {
+    all: ["health-checks"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      status: string
+      tenantId: string | null
+    }) => [...queryKeys.healthChecks.all, "list", params] as const,
+    metrics: (tenantId: string | null) =>
+      [...queryKeys.healthChecks.all, "metrics", tenantId] as const,
+  },
+  errorLogs: {
+    all: ["error-logs"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      severity: string
+      resolution: string
+      tenantId: string | null
+    }) => [...queryKeys.errorLogs.all, "list", params] as const,
+    metrics: (tenantId: string | null) =>
+      [...queryKeys.errorLogs.all, "metrics", tenantId] as const,
+  },
+  supportTickets: {
+    all: ["support-tickets"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      status: string
+      priority: string
+      category: string
+      tenantId: string | null
+    }) => [...queryKeys.supportTickets.all, "list", params] as const,
+    metrics: (tenantId: string | null) =>
+      [...queryKeys.supportTickets.all, "metrics", tenantId] as const,
+    detail: (ticketId: number) =>
+      [...queryKeys.supportTickets.all, "detail", ticketId] as const,
+  },
+  changelog: {
+    all: ["changelog"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      type: string
+      isPublished: string
+    }) => [...queryKeys.changelog.all, "list", params] as const,
+  },
+  activityLog: {
+    all: ["activity-log"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      logName: string
+      event: string
+    }) => [...queryKeys.activityLog.all, "list", params] as const,
+  },
+  impersonationTokens: {
+    all: ["impersonation-tokens"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      status: string
+      tenantId: string | null
+    }) => [...queryKeys.impersonationTokens.all, "list", params] as const,
+  },
+  usageRecords: {
+    all: ["usage-records"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      metric: string
+      tenantId: string | null
+    }) => [...queryKeys.usageRecords.all, "list", params] as const,
+  },
+  tenantMetrics: {
+    all: ["tenant-metrics"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      tenantId: string | null
+    }) => [...queryKeys.tenantMetrics.all, "list", params] as const,
+    metrics: (tenantId: string | null) =>
+      [...queryKeys.tenantMetrics.all, "metrics", tenantId] as const,
+  },
 } as const

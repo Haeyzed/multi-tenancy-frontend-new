@@ -18,8 +18,42 @@ import {
   subscriptionStatusLabels,
   type Subscription,
 } from "@/types/central/subscription"
+import type { ApiKey } from "@/types/central/api-key"
 import type { Domain } from "@/types/central/domain"
-import type { TenantConfig } from "@/types/central/tenant-config"
+import type { ErrorLog } from "@/types/central/error-log"
+import type { HealthCheck } from "@/types/central/health-check"
+import {
+  errorLogSeverityLabels,
+  type ErrorLogSeverity,
+} from "@/types/central/error-log"
+import {
+  healthCheckStatusLabels,
+  healthCheckTypeLabels,
+  type HealthCheckStatus,
+  type HealthCheckType,
+} from "@/types/central/health-check"
+import type { TenantMetric } from "@/types/central/tenant-metric"
+import type { UsageRecord } from "@/types/central/usage-record"
+import {
+  usageMetricLabels,
+  type UsageMetric,
+} from "@/types/central/usage-record"
+import type { ActivityLogEntry } from "@/types/central/activity-log"
+import type { ImpersonationToken } from "@/types/central/impersonation-token"
+import {
+  changelogTypeLabels,
+  type ChangelogType,
+  type PlatformChangelog,
+} from "@/types/central/changelog"
+import type { SupportTicket } from "@/types/central/support-ticket"
+import {
+  supportTicketCategoryLabels,
+  supportTicketPriorityLabels,
+  supportTicketStatusLabels,
+  type SupportTicketCategory,
+  type SupportTicketPriority,
+  type SupportTicketStatus,
+} from "@/types/central/support-ticket"
 import { TenantStatuses, type Tenant } from "@/types/central/tenant"
 import type { User } from "@/types/central/user"
 import {
@@ -344,5 +378,259 @@ export function getAnnouncementViewFields(
     { label: "Body", value: formatViewText(announcement.body), fullWidth: true },
     { label: "Created", value: formatViewDate(announcement.created_at) },
     { label: "Updated", value: formatViewDate(announcement.updated_at) },
+  ]
+}
+
+export function getApiKeyViewFields(apiKey: ApiKey): RecordViewField[] {
+  return [
+    { label: "Name", value: formatViewText(apiKey.name) },
+    { label: "Tenant", value: formatViewText(apiKey.tenant?.name) },
+    { label: "Active", value: formatViewBoolean(apiKey.is_active) },
+    {
+      label: "Permissions",
+      value: formatViewText(apiKey.permissions?.join(", ")),
+      fullWidth: true,
+    },
+    { label: "Last used", value: formatViewDate(apiKey.last_used_at) },
+    { label: "Expires", value: formatViewDate(apiKey.expires_at) },
+    { label: "Created", value: formatViewDate(apiKey.created_at) },
+    { label: "Updated", value: formatViewDate(apiKey.updated_at) },
+  ]
+}
+
+export function getHealthCheckViewFields(
+  healthCheck: HealthCheck,
+): RecordViewField[] {
+  return [
+    {
+      label: "Check type",
+      value: formatViewText(
+        healthCheckTypeLabels[healthCheck.check_type as HealthCheckType] ??
+          healthCheck.check_type,
+      ),
+    },
+    { label: "Tenant", value: formatViewText(healthCheck.tenant?.name) },
+    {
+      label: "Status",
+      value: formatViewText(
+        healthCheckStatusLabels[healthCheck.status as HealthCheckStatus] ??
+          healthCheck.status,
+      ),
+    },
+    {
+      label: "Response time",
+      value: formatViewText(
+        healthCheck.response_time_ms != null
+          ? `${healthCheck.response_time_ms} ms`
+          : null,
+      ),
+    },
+    { label: "Message", value: formatViewText(healthCheck.message), fullWidth: true },
+    { label: "Checked", value: formatViewDate(healthCheck.checked_at) },
+    { label: "Created", value: formatViewDate(healthCheck.created_at) },
+  ]
+}
+
+export function getErrorLogViewFields(errorLog: ErrorLog): RecordViewField[] {
+  return [
+    {
+      label: "Severity",
+      value: formatViewText(
+        errorLogSeverityLabels[errorLog.severity as ErrorLogSeverity] ??
+          errorLog.severity,
+      ),
+    },
+    { label: "Channel", value: formatViewText(errorLog.channel) },
+    { label: "Tenant", value: formatViewText(errorLog.tenant?.name ?? "Platform") },
+    { label: "Message", value: formatViewText(errorLog.message), fullWidth: true },
+    {
+      label: "Context",
+      value: formatViewText(
+        errorLog.context ? JSON.stringify(errorLog.context, null, 2) : null,
+      ),
+      mono: true,
+      fullWidth: true,
+    },
+    { label: "Occurred", value: formatViewDate(errorLog.occurred_at) },
+    { label: "Resolved", value: formatViewDate(errorLog.resolved_at) },
+    { label: "Created", value: formatViewDate(errorLog.created_at) },
+  ]
+}
+
+export function getSupportTicketViewFields(
+  ticket: SupportTicket,
+): RecordViewField[] {
+  return [
+    { label: "Subject", value: formatViewText(ticket.subject) },
+    { label: "Tenant", value: formatViewText(ticket.tenant?.name) },
+    {
+      label: "Category",
+      value: formatViewText(
+        supportTicketCategoryLabels[ticket.category as SupportTicketCategory] ??
+          ticket.category,
+      ),
+    },
+    {
+      label: "Priority",
+      value: formatViewText(
+        supportTicketPriorityLabels[ticket.priority as SupportTicketPriority] ??
+          ticket.priority,
+      ),
+    },
+    {
+      label: "Status",
+      value: formatViewText(
+        supportTicketStatusLabels[ticket.status as SupportTicketStatus] ??
+          ticket.status,
+      ),
+    },
+    { label: "Assignee", value: formatViewText(ticket.assignee?.name) },
+    { label: "Body", value: formatViewText(ticket.body), fullWidth: true },
+    { label: "Resolved", value: formatViewDate(ticket.resolved_at) },
+    { label: "Created", value: formatViewDate(ticket.created_at) },
+    { label: "Updated", value: formatViewDate(ticket.updated_at) },
+  ]
+}
+
+function shortClassName(value: string | null) {
+  if (!value) {
+    return "—"
+  }
+
+  const parts = value.split("\\")
+
+  return parts[parts.length - 1] ?? value
+}
+
+export function getChangelogViewFields(
+  entry: PlatformChangelog,
+): RecordViewField[] {
+  return [
+    { label: "Version", value: formatViewText(entry.version) },
+    { label: "Title", value: formatViewText(entry.title) },
+    {
+      label: "Type",
+      value: formatViewText(
+        changelogTypeLabels[entry.type as ChangelogType] ?? entry.type,
+      ),
+    },
+    { label: "Published", value: formatViewBoolean(entry.is_published) },
+    { label: "Published at", value: formatViewDate(entry.published_at) },
+    {
+      label: "Description",
+      value: formatViewText(entry.description),
+      fullWidth: true,
+    },
+    { label: "Created", value: formatViewDate(entry.created_at) },
+    { label: "Updated", value: formatViewDate(entry.updated_at) },
+  ]
+}
+
+export function getActivityLogViewFields(
+  entry: ActivityLogEntry,
+): RecordViewField[] {
+  return [
+    { label: "Description", value: formatViewText(entry.description), fullWidth: true },
+    { label: "Event", value: formatViewText(entry.event) },
+    { label: "Log", value: formatViewText(entry.log_name) },
+    {
+      label: "Subject",
+      value: formatViewText(
+        entry.subject_type
+          ? `${shortClassName(entry.subject_type)}${entry.subject_id != null ? ` #${entry.subject_id}` : ""}`
+          : null,
+      ),
+    },
+    { label: "Actor", value: formatViewText(entry.causer?.name ?? "System") },
+    {
+      label: "Changes",
+      value: formatViewText(
+        entry.attribute_changes
+          ? JSON.stringify(entry.attribute_changes, null, 2)
+          : null,
+      ),
+      mono: true,
+      fullWidth: true,
+    },
+    {
+      label: "Properties",
+      value: formatViewText(
+        entry.properties ? JSON.stringify(entry.properties, null, 2) : null,
+      ),
+      mono: true,
+      fullWidth: true,
+    },
+    { label: "When", value: formatViewDate(entry.created_at) },
+  ]
+}
+
+function getImpersonationTokenStatusLabel(token: ImpersonationToken) {
+  if (token.used_at) {
+    return "Used"
+  }
+
+  if (new Date(token.expires_at) <= new Date()) {
+    return "Expired"
+  }
+
+  return "Valid"
+}
+
+export function getImpersonationTokenViewFields(
+  token: ImpersonationToken,
+): RecordViewField[] {
+  return [
+    { label: "Tenant", value: formatViewText(token.tenant?.name) },
+    { label: "Issued by", value: formatViewText(token.administrator?.name) },
+    {
+      label: "Status",
+      value: formatViewText(getImpersonationTokenStatusLabel(token)),
+    },
+    { label: "Expires", value: formatViewDate(token.expires_at) },
+    { label: "Used", value: formatViewDate(token.used_at) },
+    { label: "Created", value: formatViewDate(token.created_at) },
+    { label: "Updated", value: formatViewDate(token.updated_at) },
+  ]
+}
+
+export function getUsageRecordViewFields(record: UsageRecord): RecordViewField[] {
+  return [
+    {
+      label: "Metric",
+      value: formatViewText(
+        usageMetricLabels[record.metric as UsageMetric] ?? String(record.metric),
+      ),
+    },
+    { label: "Tenant", value: formatViewText(record.tenant?.name) },
+    {
+      label: "Subscription",
+      value: formatViewText(record.subscription_id ?? "—"),
+    },
+    { label: "Quantity", value: formatViewText(String(record.quantity)) },
+    { label: "Recorded", value: formatViewDate(record.recorded_at) },
+    { label: "Created", value: formatViewDate(record.created_at) },
+    { label: "Updated", value: formatViewDate(record.updated_at) },
+  ]
+}
+
+export function getTenantMetricViewFields(metric: TenantMetric): RecordViewField[] {
+  return [
+    { label: "Tenant", value: formatViewText(metric.tenant?.name) },
+    { label: "Date", value: formatViewDate(metric.metric_date) },
+    { label: "Orders", value: formatViewText(String(metric.total_orders)) },
+    { label: "Revenue", value: formatViewText(String(metric.total_revenue)) },
+    { label: "Products", value: formatViewText(String(metric.total_products)) },
+    { label: "Customers", value: formatViewText(String(metric.total_customers)) },
+    {
+      label: "Storage (MB)",
+      value: formatViewText(String(metric.storage_used_mb)),
+    },
+    {
+      label: "Bandwidth (MB)",
+      value: formatViewText(String(metric.bandwidth_used_mb)),
+    },
+    { label: "API calls", value: formatViewText(String(metric.api_calls)) },
+    { label: "Created", value: formatViewDate(metric.created_at) },
+    { label: "Updated", value: formatViewDate(metric.updated_at) },
   ]
 }
