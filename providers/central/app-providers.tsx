@@ -3,16 +3,27 @@
 import { AuthProvider } from "@/providers/central/auth-provider"
 import { QueryProvider } from "@/providers/central/query-provider"
 import { TenantProvider } from "@/providers/central/tenant-provider"
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { HostAwareProviders } from "@/providers/host-aware-providers"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
+
+export function CentralInnerProviders({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <AuthProvider>
+      <TenantProvider>{children}</TenantProvider>
+    </AuthProvider>
+  )
+}
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryProvider>
-      <AuthProvider>
-        <NuqsAdapter>
-          <TenantProvider>{children}</TenantProvider>
-        </NuqsAdapter>
-      </AuthProvider>
+      <NuqsAdapter>
+        <HostAwareProviders>{children}</HostAwareProviders>
+      </NuqsAdapter>
     </QueryProvider>
   )
 }
