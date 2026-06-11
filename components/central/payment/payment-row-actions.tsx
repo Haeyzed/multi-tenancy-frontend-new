@@ -5,7 +5,7 @@ import { EyeIcon, MoreHorizontalIcon, Undo2Icon } from "lucide-react"
 import * as React from "react"
 
 import { PaymentRefundDialog } from "@/components/central/payment/payment-refund-dialog"
-import { RecordViewDialog } from "@/components/central/record-view-dialog"
+import { PaymentViewDialog } from "@/components/central/payment/payment-view-dialog"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -16,7 +16,6 @@ import {
 import { usePermissions } from "@/hooks/use-permissions"
 import { toastApiMessage } from "@/lib/central/api/toast"
 import { Permissions } from "@/lib/central/auth/permissions"
-import { getPaymentViewFields } from "@/lib/central/view/view-fields"
 import { queryKeys } from "@/lib/central/query/keys"
 import { paymentService } from "@/services/central/payment.service"
 import { PaymentStatuses, type Payment } from "@/types/central/payment"
@@ -75,12 +74,10 @@ export function PaymentRowActions({ payment }: PaymentRowActionsProps) {
       </DropdownMenu>
 
       {canView ? (
-        <RecordViewDialog
+        <PaymentViewDialog
+          payment={payment}
           open={viewOpen}
           onOpenChange={setViewOpen}
-          title={payment.provider_payment_id ?? "Payment"}
-          description={payment.tenant?.name ?? "Payment details"}
-          fields={getPaymentViewFields(payment)}
         />
       ) : null}
 

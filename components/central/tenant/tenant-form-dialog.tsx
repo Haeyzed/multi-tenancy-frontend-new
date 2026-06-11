@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import {
   databaseFromSlug,
   domainFromSlug,
+  tenantDomainPlaceholder,
   formStateToPayload,
   slugifyTenantName,
   tenantToFormState,
@@ -232,7 +233,7 @@ export function TenantFormDialog({
                     setDomainTouched(true)
                     updateField("domain", event.target.value)
                   }}
-                  placeholder="acme.example.com"
+                  placeholder={tenantDomainPlaceholder("acme")}
                   required
                 />
               </Field>

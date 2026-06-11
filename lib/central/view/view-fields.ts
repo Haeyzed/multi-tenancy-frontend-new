@@ -14,6 +14,8 @@ import {
   paymentStatusLabels,
   type Payment,
 } from "@/types/central/payment"
+import { getCardDisplayInfo } from "@/lib/central/payment/card-brand"
+import type { PaymentMethod } from "@/types/central/payment-method"
 import {
   subscriptionStatusLabels,
   type Subscription,
@@ -290,11 +292,24 @@ export function getPaymentViewFields(payment: Payment): RecordViewField[] {
       value: formatViewText(payment.payment_provider),
     },
     {
+      label: "Card brand",
+      value: formatViewText(
+        payment.payment_method_brand
+          ? getCardDisplayInfo(payment.payment_method_brand).label
+          : null,
+      ),
+    },
+    {
       label: "Payment method",
       value: formatViewText(
-        [payment.payment_method_type, payment.payment_method_last4]
+        [
+          payment.payment_method_type,
+          payment.payment_method_last4
+            ? `•••• ${payment.payment_method_last4}`
+            : null,
+        ]
           .filter(Boolean)
-          .join(" •••• "),
+          .join(" "),
       ),
     },
     {
@@ -304,6 +319,72 @@ export function getPaymentViewFields(payment: Payment): RecordViewField[] {
     },
     { label: "Created", value: formatViewDate(payment.created_at) },
     { label: "Updated", value: formatViewDate(payment.updated_at) },
+  ]
+}
+
+export function getPaymentMethodViewFields(
+  method: PaymentMethod,
+): RecordViewField[] {
+  const billing = method.billing_details
+
+  return [
+    { label: "Tenant", value: formatViewText(method.tenant?.name) },
+    {
+      label: "Brand",
+      value: formatViewText(getCardDisplayInfo(method.brand).label),
+    },
+    {
+      label: "Last four digits",
+      value: formatViewText(method.last4 ? `•••• ${method.last4}` : null),
+      mono: true,
+    },
+    {
+      label: "Expiry",
+      value: formatViewText(
+        method.exp_month && method.exp_year
+          ? `${String(method.exp_month).padStart(2, "0")}/${method.exp_year}`
+          : null,
+      ),
+    },
+    {
+      label: "Provider",
+      value: formatViewText(method.provider),
+    },
+    {
+      label: "Provider method ID",
+      value: formatViewText(method.provider_method_id),
+      mono: true,
+      fullWidth: true,
+    },
+    {
+      label: "Default",
+      value: formatViewText(method.is_default ? "Yes" : "No"),
+    },
+    {
+      label: "Cardholder name",
+      value: formatViewText(billing?.name ?? method.tenant?.owner_name),
+    },
+    {
+      label: "Billing email",
+      value: formatViewText(billing?.email ?? method.tenant?.owner_email),
+    },
+    {
+      label: "Bank",
+      value: formatViewText(billing?.bank),
+    },
+    {
+      label: "BIN",
+      value: formatViewText(billing?.bin),
+      mono: true,
+    },
+    {
+      label: "Authorization code",
+      value: formatViewText(billing?.authorization_code),
+      mono: true,
+      fullWidth: true,
+    },
+    { label: "Saved", value: formatViewDate(method.created_at) },
+    { label: "Updated", value: formatViewDate(method.updated_at) },
   ]
 }
 

@@ -99,9 +99,9 @@ export function LoginForm({
             {isLoading ? "Signing in..." : "Login"}
           </Button>
           <FieldDescription className="text-center">
-            Don&apos;t have an account?{" "}
-            <Link href="/central/signup" className="underline underline-offset-4">
-              Sign up
+            Need a store?{" "}
+            <Link href="/onboard" className="underline underline-offset-4">
+              Start self onboarding
             </Link>
             {" · "}
             <Link href="/central/verify-email" className="underline underline-offset-4">

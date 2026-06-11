@@ -18,6 +18,7 @@ import { PaymentRowActions } from "@/components/central/payment/payment-row-acti
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Badge } from "@/components/ui/badge"
 import { formatMoneyFromMinor } from "@/lib/central/billing/format-money"
+import { getCardDisplayInfo } from "@/lib/central/payment/card-brand"
 import { paymentStatusFilterOptions } from "@/lib/data-table/billing-filter-options"
 import {
   PaymentStatuses,
@@ -163,17 +164,25 @@ export function getPaymentColumns(): ColumnDef<Payment>[] {
       ),
       cell: ({ row }) => {
         const last4 = row.original.payment_method_last4
+        const brand = row.original.payment_method_brand
         const type = row.original.payment_method_type
 
-        if (!last4 && !type) {
+        if (!last4 && !type && !brand) {
           return "—"
         }
 
+        const brandInfo = getCardDisplayInfo(brand)
+
         return (
-          <span className="capitalize">
-            {type ? `${type} ` : ""}
-            {last4 ? `•••• ${last4}` : ""}
-          </span>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-xs font-medium capitalize">
+              {brandInfo.label}
+            </span>
+            <span className="font-mono text-xs text-muted-foreground">
+              {type ? `${type} ` : ""}
+              {last4 ? `•••• ${last4}` : ""}
+            </span>
+          </div>
         )
       },
     },

@@ -86,6 +86,11 @@ const navItems: NavMainItem[] = [
         permission: Permissions.billing.view,
       },
       {
+        title: "Payment methods",
+        url: "/central/payment-methods",
+        permission: Permissions.billing.view,
+      },
+      {
         title: "Usage records",
         url: "/central/usage-records",
         permission: Permissions.billing.view,

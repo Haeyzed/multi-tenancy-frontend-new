@@ -5,7 +5,7 @@ export type PaymentProvider = "stripe" | "paystack"
 
 export type BillingCycle = "monthly" | "yearly"
 
-export interface SignupPayload {
+export interface OnboardPayload {
   name: string
   slug?: string
   database?: string
@@ -14,12 +14,14 @@ export interface SignupPayload {
   billing_cycle: BillingCycle
   owner_email: string
   owner_name: string
+  owner_password: string
   payment_provider: PaymentProvider
+  notes?: string
   success_url?: string
   cancel_url?: string
 }
 
-export interface SignupResponse {
+export interface OnboardResponse {
   tenant: Tenant
   requires_payment: boolean
   requires_payment_method: boolean

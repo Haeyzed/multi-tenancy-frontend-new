@@ -30,10 +30,18 @@ export function databaseFromSlug(slug: string): string {
   return normalized ? `tenant_${normalized}` : ""
 }
 
+/** Base hostname for tenant API domains (subdomain per store). */
+export const TENANT_DOMAIN_BASE =
+  process.env.NEXT_PUBLIC_TENANT_DOMAIN_BASE ?? "multi-tenancy-api.test"
+
+export function tenantDomainPlaceholder(slug = "acme"): string {
+  return `${slug}.${TENANT_DOMAIN_BASE}`
+}
+
 export function domainFromSlug(slug: string): string {
   const normalized = slug.trim()
 
-  return normalized ? `${normalized}.example.com` : ""
+  return normalized ? `${normalized}.${TENANT_DOMAIN_BASE}` : ""
 }
 
 function isoToDatetimeLocal(value: string | null | undefined): string {

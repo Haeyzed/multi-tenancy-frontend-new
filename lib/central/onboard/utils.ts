@@ -1,3 +1,5 @@
+export const ONBOARD_BASE_PATH = "/onboard"
+
 export function formatPlanPrice(
   amount: number,
   currency: string,
@@ -23,16 +25,16 @@ export function formatMinorAmount(amount: number, currency: string): string {
   return formatPlanPrice(amount, currency, "monthly").replace(/\/mo$/, "")
 }
 
-export function getSignupCancelUrl(): string {
+export function getOnboardCancelUrl(): string {
   if (typeof window === "undefined") {
-    return "/central/signup/cancel"
+    return `${ONBOARD_BASE_PATH}/cancel`
   }
 
-  return `${window.location.origin}/central/signup/cancel`
+  return `${window.location.origin}${ONBOARD_BASE_PATH}/cancel`
 }
 
 /** Paystack/Stripe redirect here; the API verifies payment then forwards to the frontend success page. */
-export function getSignupCallbackUrl(callbackUrl?: string): string {
+export function getOnboardCallbackUrl(callbackUrl?: string): string {
   if (callbackUrl) {
     return callbackUrl
   }

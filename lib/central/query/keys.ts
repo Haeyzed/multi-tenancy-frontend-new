@@ -57,6 +57,15 @@ export const queryKeys = {
     metrics: (tenantId: string | null) =>
       [...queryKeys.payments.all, "metrics", tenantId] as const,
   },
+  paymentMethods: {
+    all: ["payment-methods"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      tenantId: string | null
+    }) => [...queryKeys.paymentMethods.all, "list", params] as const,
+  },
   plans: {
     all: ["plans"] as const,
     options: () => [...queryKeys.plans.all, "options"] as const,

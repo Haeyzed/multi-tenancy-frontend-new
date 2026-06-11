@@ -10,17 +10,18 @@ import { ApiError } from "@/lib/central/api/errors"
 import {
   formatMinorAmount,
   formatPlanPrice,
-  getSignupCallbackUrl,
-  getSignupCancelUrl,
-} from "@/lib/central/signup/utils"
+  getOnboardCallbackUrl,
+  getOnboardCancelUrl,
+} from "@/lib/central/onboard/utils"
 import {
   databaseFromSlug,
   domainFromSlug,
   slugifyTenantName,
+  tenantDomainPlaceholder,
 } from "@/lib/central/tenant/tenant-form-utils"
 import { cn } from "@/lib/utils"
-import { signupService } from "@/services/central/signup.service"
-import type { BillingCycle, PaymentProvider, PublicPlan } from "@/types/central/signup"
+import { onboardService } from "@/services/central/onboard.service"
+import type { BillingCycle, PaymentProvider, PublicPlan } from "@/types/central/onboard"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -30,16 +31,20 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Textarea } from "@/components/ui/textarea"
 
-interface SignupFormState {
+interface OnboardFormState {
   name: string
   slug: string
   domain: string
   ownerName: string
   ownerEmail: string
+  ownerPassword: string
+  ownerPasswordConfirmation: string
   planId: string
   billingCycle: BillingCycle
   paymentProvider: PaymentProvider
+  notes: string
 }
 
 const billingCycleOptions = [
@@ -62,19 +67,22 @@ function getPlanHighlights(plan: PublicPlan): string[] {
   return []
 }
 
-export function SignupForm({
+export function OnboardForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const [form, setForm] = React.useState<SignupFormState>({
+  const [form, setForm] = React.useState<OnboardFormState>({
     name: "",
     slug: "",
     domain: "",
     ownerName: "",
     ownerEmail: "",
+    ownerPassword: "",
+    ownerPasswordConfirmation: "",
     planId: "",
     billingCycle: "monthly",
     paymentProvider: "paystack",
+    notes: "",
   })
   const [slugTouched, setSlugTouched] = React.useState(false)
   const [domainTouched, setDomainTouched] = React.useState(false)
@@ -82,13 +90,13 @@ export function SignupForm({
   const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const plansQuery = useQuery({
-    queryKey: ["signup", "public-plans"],
-    queryFn: () => signupService.getPublicPlans(),
+    queryKey: ["onboard", "public-plans"],
+    queryFn: () => onboardService.getPublicPlans(),
   })
 
   const paymentConfigQuery = useQuery({
-    queryKey: ["signup", "payment-config"],
-    queryFn: () => signupService.getPaymentConfig(),
+    queryKey: ["onboard", "payment-config"],
+    queryFn: () => onboardService.getPaymentConfig(),
   })
 
   const plans = plansQuery.data ?? []
@@ -101,9 +109,9 @@ export function SignupForm({
     }
   }, [form.planId, plans])
 
-  function updateField<K extends keyof SignupFormState>(
+  function updateField<K extends keyof OnboardFormState>(
     key: K,
-    value: SignupFormState[K],
+    value: OnboardFormState[K],
   ) {
     setForm((current) => ({ ...current, [key]: value }))
   }
@@ -139,10 +147,20 @@ export function SignupForm({
       return
     }
 
+    if (form.ownerPassword.length < 8) {
+      setErrorMessage("Password must be at least 8 characters.")
+      return
+    }
+
+    if (form.ownerPassword !== form.ownerPasswordConfirmation) {
+      setErrorMessage("Passwords do not match.")
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
-      const { data, message } = await signupService.signup({
+      const { data, message } = await onboardService.onboard({
         name: form.name,
         slug: form.slug,
         database: databaseFromSlug(form.slug),
@@ -151,11 +169,13 @@ export function SignupForm({
         billing_cycle: form.billingCycle,
         owner_email: form.ownerEmail,
         owner_name: form.ownerName,
+        owner_password: form.ownerPassword,
         payment_provider: form.paymentProvider,
-        success_url: getSignupCallbackUrl(
+        notes: form.notes.trim() || undefined,
+        success_url: getOnboardCallbackUrl(
           paymentConfigQuery.data?.checkout.callback_url,
         ),
-        cancel_url: getSignupCancelUrl(),
+        cancel_url: getOnboardCancelUrl(),
       })
 
       if (data.checkout_url) {
@@ -163,14 +183,14 @@ export function SignupForm({
         return
       }
 
-      setErrorMessage(message ?? "Signup completed successfully.")
+      setErrorMessage(message ?? "Self-onboarding completed successfully.")
     } catch (error) {
       if (error instanceof ApiError) {
         setErrorMessage(error.firstFieldError ?? error.message)
         return
       }
 
-      setErrorMessage("Unable to complete signup. Please try again.")
+      setErrorMessage("Unable to complete onboarding. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -184,10 +204,10 @@ export function SignupForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold">Start your workspace</h1>
+          <h1 className="text-2xl font-bold">Start your store</h1>
           <p className="text-sm text-balance text-muted-foreground">
             Create your organization, choose a plan, and complete checkout to
-            get started.
+            launch your workspace.
           </p>
         </div>
 
@@ -198,9 +218,9 @@ export function SignupForm({
         ) : null}
 
         <Field>
-          <FieldLabel htmlFor="signup-org-name">Organization name</FieldLabel>
+          <FieldLabel htmlFor="onboarding-org-name">Organization name</FieldLabel>
           <Input
-            id="signup-org-name"
+            id="onboarding-org-name"
             value={form.name}
             onChange={(event) => handleNameChange(event.target.value)}
             placeholder="Acme Corp"
@@ -211,9 +231,9 @@ export function SignupForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
-            <FieldLabel htmlFor="signup-slug">Slug</FieldLabel>
+            <FieldLabel htmlFor="onboarding-slug">Slug</FieldLabel>
             <Input
-              id="signup-slug"
+              id="onboarding-slug"
               value={form.slug}
               onChange={(event) => handleSlugChange(event.target.value)}
               placeholder="acme-corp"
@@ -222,26 +242,30 @@ export function SignupForm({
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="signup-domain">Domain</FieldLabel>
+            <FieldLabel htmlFor="onboarding-domain">Tenant domain</FieldLabel>
             <Input
-              id="signup-domain"
+              id="onboarding-domain"
               value={form.domain}
               onChange={(event) => {
                 setDomainTouched(true)
                 updateField("domain", event.target.value)
               }}
-              placeholder="acme.example.com"
+              placeholder={tenantDomainPlaceholder("acme")}
               required
               className="bg-background"
             />
+            <FieldDescription>
+              Hostname for this store&apos;s API (not localhost:3000). Must resolve in
+              Herd, e.g. {tenantDomainPlaceholder("your-store")}.
+            </FieldDescription>
           </Field>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
-            <FieldLabel htmlFor="signup-owner-name">Your name</FieldLabel>
+            <FieldLabel htmlFor="onboarding-owner-name">Your name</FieldLabel>
             <Input
-              id="signup-owner-name"
+              id="onboarding-owner-name"
               value={form.ownerName}
               onChange={(event) => updateField("ownerName", event.target.value)}
               placeholder="Jane Doe"
@@ -250,9 +274,9 @@ export function SignupForm({
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="signup-owner-email">Work email</FieldLabel>
+            <FieldLabel htmlFor="onboarding-owner-email">Work email</FieldLabel>
             <Input
-              id="signup-owner-email"
+              id="onboarding-owner-email"
               type="email"
               value={form.ownerEmail}
               onChange={(event) => updateField("ownerEmail", event.target.value)}
@@ -263,10 +287,61 @@ export function SignupForm({
           </Field>
         </div>
 
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field>
+            <FieldLabel htmlFor="onboarding-owner-password">Password</FieldLabel>
+            <Input
+              id="onboarding-owner-password"
+              type="password"
+              value={form.ownerPassword}
+              onChange={(event) =>
+                updateField("ownerPassword", event.target.value)
+              }
+              autoComplete="new-password"
+              minLength={8}
+              required
+              className="bg-background"
+            />
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="onboarding-owner-password-confirmation">
+              Confirm password
+            </FieldLabel>
+            <Input
+              id="onboarding-owner-password-confirmation"
+              type="password"
+              value={form.ownerPasswordConfirmation}
+              onChange={(event) =>
+                updateField("ownerPasswordConfirmation", event.target.value)
+              }
+              autoComplete="new-password"
+              minLength={8}
+              required
+              className="bg-background"
+            />
+          </Field>
+        </div>
+
+        <Field>
+          <FieldLabel htmlFor="onboarding-notes">Notes</FieldLabel>
+          <Textarea
+            id="onboarding-notes"
+            value={form.notes}
+            onChange={(event) => updateField("notes", event.target.value)}
+            placeholder="Optional context for billing records, e.g. store location or launch details"
+            rows={3}
+            className="bg-background resize-none"
+          />
+          <FieldDescription>
+            Saved on the invoice (when applicable) and onboarding history. System
+            steps such as card verification are appended automatically.
+          </FieldDescription>
+        </Field>
+
         <Field>
           <FieldLabel>Plan</FieldLabel>
           <FieldDescription>
-            Public plans available for self-service signup.
+            Public plans available for self-service onboarding.
           </FieldDescription>
           {plansQuery.isLoading ? (
             <div className="grid gap-3 sm:grid-cols-2">
@@ -332,9 +407,9 @@ export function SignupForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
-            <FieldLabel htmlFor="signup-billing-cycle">Billing cycle</FieldLabel>
+            <FieldLabel htmlFor="onboarding-billing-cycle">Billing cycle</FieldLabel>
             <OptionsCombobox
-              id="signup-billing-cycle"
+              id="onboarding-billing-cycle"
               items={billingCycleOptions}
               value={form.billingCycle}
               onValueChange={(value) =>
@@ -344,11 +419,11 @@ export function SignupForm({
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="signup-payment-provider">
+            <FieldLabel htmlFor="onboarding-payment-provider">
               Payment provider
             </FieldLabel>
             <OptionsCombobox
-              id="signup-payment-provider"
+              id="onboarding-payment-provider"
               items={paymentProviderOptions}
               value={form.paymentProvider}
               onValueChange={(value) =>
@@ -383,16 +458,22 @@ export function SignupForm({
             {isSubmitting ? (
               <>
                 <Loader2Icon className="animate-spin" />
-                Creating workspace...
+                Setting up your store...
               </>
             ) : (
               "Continue to checkout"
             )}
           </Button>
+          {isSubmitting ? (
+            <FieldDescription>
+              Creating your tenant database. This can take up to a minute on the
+              first run.
+            </FieldDescription>
+          ) : null}
           <FieldDescription className="text-center">
-            Already have an account?{" "}
+            Already have a platform account?{" "}
             <Link href="/central/login" className="underline underline-offset-4">
-              Sign in
+              Central sign in
             </Link>
           </FieldDescription>
         </Field>

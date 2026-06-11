@@ -123,6 +123,7 @@ export const RoutePermissions: Record<string, PermissionName | null> = {
   "/central/subscriptions": Permissions.billing.view,
   "/central/invoices": Permissions.billing.view,
   "/central/payments": Permissions.billing.view,
+  "/central/payment-methods": Permissions.billing.view,
   "/central/usage-records": Permissions.billing.view,
   "/central/users": Permissions.users.view,
   "/central/roles": Permissions.roles.view,

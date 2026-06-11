@@ -4,9 +4,10 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react"
 
+import { ONBOARD_BASE_PATH } from "@/lib/central/onboard/utils"
 import { Button } from "@/components/ui/button"
 
-export function SignupSuccessContent() {
+export function OnboardSuccessContent() {
   const searchParams = useSearchParams()
   const status = searchParams.get("status")
   const message = searchParams.get("message")
@@ -38,13 +39,19 @@ export function SignupSuccessContent() {
 
       <div className="flex flex-col gap-2">
         {isSuccess ? (
-          <Button render={<Link href="/central/login" />}>Sign in to your workspace</Button>
+          <p className="text-sm text-muted-foreground">
+            Check your email for store sign-in instructions at your tenant domain.
+          </p>
         ) : (
-          <Button render={<Link href="/central/signup" />}>Back to signup</Button>
+          <Button render={<Link href={ONBOARD_BASE_PATH} />}>
+            Back to onboarding
+          </Button>
         )}
-        <Button variant="outline" render={<Link href="/central/login" />}>
-          Go to login
-        </Button>
+        {!isSuccess ? (
+          <Button variant="outline" render={<Link href="/central/login" />}>
+            Central admin sign in
+          </Button>
+        ) : null}
       </div>
     </div>
   )

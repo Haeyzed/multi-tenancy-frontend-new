@@ -43,6 +43,7 @@ export interface Payment {
   provider_payment_id: string | null
   payment_method_type: string | null
   payment_method_last4: string | null
+  payment_method_brand: string | null
   failure_message: string | null
   refunded_amount: number
   created_at: string | null

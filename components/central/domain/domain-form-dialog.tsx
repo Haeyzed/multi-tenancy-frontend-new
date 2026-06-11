@@ -25,6 +25,7 @@ import {
 import { ApiError } from "@/lib/central/api/errors"
 import { toastApiMessage } from "@/lib/central/api/toast"
 import { queryKeys } from "@/lib/central/query/keys"
+import { tenantDomainPlaceholder } from "@/lib/central/tenant/tenant-form-utils"
 import { domainService } from "@/services/central/domain.service"
 import { tenantService } from "@/services/central/tenant.service"
 import type { Domain } from "@/types/central/domain"
@@ -167,7 +168,7 @@ export function DomainFormDialog({
                     domain: event.target.value,
                   }))
                 }
-                placeholder="acme.example.com"
+                placeholder={tenantDomainPlaceholder("acme")}
                 disabled={isPending}
                 required
               />

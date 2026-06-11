@@ -1,12 +1,12 @@
 import { apiClient, apiRequestWithMessage } from "@/lib/central/api/client"
 import type {
+  OnboardPayload,
+  OnboardResponse,
   PaymentConfig,
   PublicPlan,
-  SignupPayload,
-  SignupResponse,
-} from "@/types/central/signup"
+} from "@/types/central/onboard"
 
-export const signupService = {
+export const onboardService = {
   getPublicPlans() {
     return apiClient.get<PublicPlan[]>("plans/public", { auth: false })
   },
@@ -15,8 +15,8 @@ export const signupService = {
     return apiClient.get<PaymentConfig>("payments/config", { auth: false })
   },
 
-  signup(payload: SignupPayload) {
-    return apiRequestWithMessage<SignupResponse>("signup", {
+  onboard(payload: OnboardPayload) {
+    return apiRequestWithMessage<OnboardResponse>("self-onboarding", {
       method: "POST",
       body: payload,
       auth: false,
@@ -26,13 +26,13 @@ export const signupService = {
   checkout(
     tenantId: string,
     payload: {
-      payment_provider: SignupPayload["payment_provider"]
+      payment_provider: OnboardPayload["payment_provider"]
       success_url?: string
       cancel_url?: string
     },
   ) {
     return apiRequestWithMessage<{ checkout_url: string; invoice_id: string }>(
-      `signup/${tenantId}/checkout`,
+      `self-onboarding/${tenantId}/checkout`,
       {
         method: "POST",
         body: payload,
