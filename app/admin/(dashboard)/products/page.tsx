@@ -1,10 +1,5 @@
-import { TenantModulePlaceholder } from "@/components/tenant/module-placeholder"
+import { ProductsPageContent } from "@/components/tenant/product/products-page-content"
 
 export default function Page() {
-  return (
-    <TenantModulePlaceholder
-      title="Products"
-      description="Manage catalog products for this store."
-    />
-  )
+  return <ProductsPageContent />
 }

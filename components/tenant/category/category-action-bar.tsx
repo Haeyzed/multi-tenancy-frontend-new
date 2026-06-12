@@ -18,14 +18,14 @@ import { useTenantPermissions } from "@/hooks/use-tenant-permissions"
 import { toastApiMessage } from "@/lib/central/api/toast"
 import { TenantPermissions } from "@/lib/tenant/auth/permissions"
 import { tenantQueryKeys } from "@/lib/tenant/query/keys"
-import { brandService } from "@/services/tenant/brand.service"
-import type { Brand } from "@/types/tenant/brand"
+import { categoryService } from "@/services/tenant/category.service"
+import type { Category } from "@/types/tenant/category"
 
-interface BrandActionBarProps {
-  table: Table<Brand>
+interface CategoryActionBarProps {
+  table: Table<Category>
 }
 
-export function BrandActionBar({ table }: BrandActionBarProps) {
+export function CategoryActionBar({ table }: CategoryActionBarProps) {
   const queryClient = useQueryClient()
   const { can } = useTenantPermissions()
   const [deleteOpen, setDeleteOpen] = React.useState(false)
@@ -50,17 +50,20 @@ export function BrandActionBar({ table }: BrandActionBarProps) {
 
   async function handleBulkDelete() {
     const ids = rows.map((row) => row.original.id)
-    const result = await brandService.bulkDelete(ids)
-    toastApiMessage(result.message, "Selected brands deleted successfully.")
-    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.brands.all })
+    const result = await categoryService.bulkDelete(ids)
+    toastApiMessage(result.message, "Selected categories deleted successfully.")
+    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.categories.all })
     table.toggleAllRowsSelected(false)
   }
 
   async function handleBulkUnlink() {
     const ids = linkedRows.map((row) => row.original.id)
-    const result = await brandService.bulkUnlink(ids)
-    toastApiMessage(result.message, "Products unlinked from selected brands successfully.")
-    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.brands.all })
+    const result = await categoryService.bulkUnlink(ids)
+    toastApiMessage(
+      result.message,
+      "Products unlinked from selected categories successfully.",
+    )
+    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.categories.all })
     await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.products.all })
     table.toggleAllRowsSelected(false)
   }
@@ -107,12 +110,12 @@ export function BrandActionBar({ table }: BrandActionBarProps) {
         <DeleteConfirmDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
-          title="Delete brands?"
+          title="Delete categories?"
           description={
             <>
               This will permanently delete{" "}
               <span className="font-medium text-foreground">{rows.length}</span>{" "}
-              selected brand{rows.length === 1 ? "" : "s"}. This action cannot be
+              selected categor{rows.length === 1 ? "y" : "ies"}. This action cannot be
               undone.
             </>
           }
@@ -125,14 +128,14 @@ export function BrandActionBar({ table }: BrandActionBarProps) {
         <DeleteConfirmDialog
           open={unlinkOpen}
           onOpenChange={setUnlinkOpen}
-          title="Unlink products from brands?"
+          title="Unlink products from categories?"
           description={
             <>
-              This will remove brand assignments from up to{" "}
+              This will remove category assignments from up to{" "}
               <span className="font-medium text-foreground">{linkedProductCount}</span>{" "}
               linked product{linkedProductCount === 1 ? "" : "s"} across{" "}
               <span className="font-medium text-foreground">{linkedRows.length}</span>{" "}
-              selected brand{linkedRows.length === 1 ? "" : "s"}.
+              selected categor{linkedRows.length === 1 ? "y" : "ies"}.
             </>
           }
           onConfirm={handleBulkUnlink}

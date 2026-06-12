@@ -19,6 +19,32 @@ export const tenantQueryKeys = {
     options: () => [...tenantQueryKeys.brands.all, "options"] as const,
     detail: (id: number) => [...tenantQueryKeys.brands.all, "detail", id] as const,
   },
+  categories: {
+    all: ["tenant", "categories"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      isActive: string
+      isFeatured: string
+      showInMenu: string
+    }) => [...tenantQueryKeys.categories.all, "list", params] as const,
+    metrics: () => [...tenantQueryKeys.categories.all, "metrics"] as const,
+    options: () => [...tenantQueryKeys.categories.all, "options"] as const,
+    detail: (id: string) => [...tenantQueryKeys.categories.all, "detail", id] as const,
+  },
+  products: {
+    all: ["tenant", "products"] as const,
+    list: (params: {
+      page: number
+      perPage: number
+      search: string
+      status: string
+    }) => [...tenantQueryKeys.products.all, "list", params] as const,
+    metrics: () => [...tenantQueryKeys.products.all, "metrics"] as const,
+    options: () => [...tenantQueryKeys.products.all, "options"] as const,
+    detail: (id: string) => [...tenantQueryKeys.products.all, "detail", id] as const,
+  },
   media: {
     all: ["tenant", "media"] as const,
     list: (params: {

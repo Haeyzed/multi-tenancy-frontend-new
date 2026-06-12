@@ -9,6 +9,7 @@ import type {
   BrandListParams,
   BrandMetricsResponse,
   BrandOption,
+  BrandUnlinkResponse,
 } from "@/types/tenant/brand"
 
 export const brandService = {
@@ -45,5 +46,15 @@ export const brandService = {
       "brands/bulk",
       ids,
     )
+  },
+
+  unlink(id: number) {
+    return tenantApiClient.postWithMessage<BrandUnlinkResponse>(`brands/${id}/unlink`)
+  },
+
+  bulkUnlink(ids: number[]) {
+    return tenantApiClient.postWithMessage<BrandUnlinkResponse>("brands/bulk/unlink", {
+      ids,
+    })
   },
 }

@@ -16,6 +16,7 @@ export interface Brand {
   website_url: string | null
   is_active: boolean
   sort_order: number
+  products_count?: number
   created_at: string | null
   updated_at: string | null
   logo_media?: BrandLogoMedia | null
@@ -49,4 +50,8 @@ export interface BrandMetricsResponse {
 
 export interface BrandBulkDeleteResponse {
   deleted: number
+}
+
+export interface BrandUnlinkResponse {
+  unlinked: number
 }

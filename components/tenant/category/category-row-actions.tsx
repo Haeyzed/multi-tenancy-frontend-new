@@ -12,7 +12,7 @@ import * as React from "react"
 
 import { DeleteConfirmDialog } from "@/components/central/delete-confirm-dialog"
 import { RecordViewDialog } from "@/components/central/record-view-dialog"
-import { BrandLogoImage } from "@/components/tenant/brand/brand-logo-image"
+import { CategoryMediaImage } from "@/components/tenant/category/category-media-image"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -24,30 +24,49 @@ import { useTenantPermissions } from "@/hooks/use-tenant-permissions"
 import { toastApiMessage } from "@/lib/central/api/toast"
 import { TenantPermissions } from "@/lib/tenant/auth/permissions"
 import { tenantQueryKeys } from "@/lib/tenant/query/keys"
-import { brandService } from "@/services/tenant/brand.service"
-import type { Brand } from "@/types/tenant/brand"
+import { categoryService } from "@/services/tenant/category.service"
+import type { Category } from "@/types/tenant/category"
 
-interface BrandRowActionsProps {
-  brand: Brand
-  onEdit: (brand: Brand) => void
+interface CategoryRowActionsProps {
+  category: Category
+  onEdit: (category: Category) => void
 }
 
-function getBrandViewFields(brand: Brand) {
+function getCategoryViewFields(category: Category) {
   return [
-    { label: "Name", value: brand.name },
-    { label: "Slug", value: brand.slug },
-    { label: "Description", value: brand.description ?? "—" },
-    { label: "Website", value: brand.website_url ?? "—" },
-    { label: "Status", value: brand.is_active ? "Active" : "Inactive" },
-    { label: "Sort order", value: String(brand.sort_order) },
-    { label: "Linked products", value: String(brand.products_count ?? 0) },
+    { label: "Name", value: category.name },
+    { label: "Slug", value: category.slug },
+    { label: "Parent", value: category.parent?.name ?? "Root" },
+    { label: "Description", value: category.description ?? "—" },
+    { label: "Status", value: category.is_active ? "Active" : "Inactive" },
+    { label: "Featured", value: category.is_featured ? "Yes" : "No" },
+    { label: "In menu", value: category.show_in_menu ? "Yes" : "No" },
+    { label: "Sort order", value: String(category.sort_order) },
+    { label: "Depth", value: String(category.depth) },
+    { label: "Path", value: category.path ?? "—" },
+    { label: "Linked products", value: String(category.products_count ?? 0) },
     {
-      label: "Logo",
+      label: "Banner",
       fullWidth: true,
-      value: brand.logo_media?.url ? (
-        <BrandLogoImage
-          url={brand.logo_media.url}
-          alt={brand.logo_media.file_name ?? brand.name}
+      value: category.banner_media?.url ? (
+        <CategoryMediaImage
+          url={category.banner_media.url}
+          alt={category.banner_media.file_name ?? `${category.name} banner`}
+          kind="banner"
+          variant="view"
+        />
+      ) : (
+        "—"
+      ),
+    },
+    {
+      label: "Icon",
+      fullWidth: true,
+      value: category.icon_media?.url ? (
+        <CategoryMediaImage
+          url={category.icon_media.url}
+          alt={category.icon_media.file_name ?? `${category.name} icon`}
+          kind="icon"
           variant="view"
         />
       ) : (
@@ -57,7 +76,7 @@ function getBrandViewFields(brand: Brand) {
   ]
 }
 
-export function BrandRowActions({ brand, onEdit }: BrandRowActionsProps) {
+export function CategoryRowActions({ category, onEdit }: CategoryRowActionsProps) {
   const queryClient = useQueryClient()
   const { can } = useTenantPermissions()
   const [viewOpen, setViewOpen] = React.useState(false)
@@ -66,19 +85,19 @@ export function BrandRowActions({ brand, onEdit }: BrandRowActionsProps) {
 
   const canView = can(TenantPermissions.catalog.view)
   const canManage = can(TenantPermissions.catalog.manage)
-  const linkedProductsCount = brand.products_count ?? 0
+  const linkedProductsCount = category.products_count ?? 0
   const hasLinkedProducts = linkedProductsCount > 0
 
   async function handleDelete() {
-    const result = await brandService.delete(brand.id)
-    toastApiMessage(result.message, "Brand deleted successfully.")
-    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.brands.all })
+    const result = await categoryService.delete(category.id)
+    toastApiMessage(result.message, "Category deleted successfully.")
+    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.categories.all })
   }
 
   async function handleUnlink() {
-    const result = await brandService.unlink(brand.id)
-    toastApiMessage(result.message, "Products unlinked from brand successfully.")
-    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.brands.all })
+    const result = await categoryService.unlink(category.id)
+    toastApiMessage(result.message, "Products unlinked from category successfully.")
+    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.categories.all })
     await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.products.all })
   }
 
@@ -105,9 +124,9 @@ export function BrandRowActions({ brand, onEdit }: BrandRowActionsProps) {
             </DropdownMenuItem>
           ) : null}
           {canManage ? (
-            <DropdownMenuItem onClick={() => onEdit(brand)}>
+            <DropdownMenuItem onClick={() => onEdit(category)}>
               <PencilIcon />
-              Edit brand
+              Edit category
             </DropdownMenuItem>
           ) : null}
           {canManage && hasLinkedProducts ? (
@@ -132,9 +151,9 @@ export function BrandRowActions({ brand, onEdit }: BrandRowActionsProps) {
         <RecordViewDialog
           open={viewOpen}
           onOpenChange={setViewOpen}
-          title={brand.name}
-          description={brand.slug}
-          fields={getBrandViewFields(brand)}
+          title={category.name}
+          description={category.slug}
+          fields={getCategoryViewFields(category)}
         />
       ) : null}
 
@@ -142,15 +161,15 @@ export function BrandRowActions({ brand, onEdit }: BrandRowActionsProps) {
         <DeleteConfirmDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
-          title="Delete brand?"
+          title="Delete category?"
           description={
             <>
               This will permanently delete{" "}
-              <span className="font-medium text-foreground">{brand.name}</span>.
+              <span className="font-medium text-foreground">{category.name}</span>.
               {hasLinkedProducts ? (
                 <>
                   {" "}
-                  This brand is linked to {linkedProductsCount} product
+                  This category is linked to {linkedProductsCount} product
                   {linkedProductsCount === 1 ? "" : "s"}. Unlink products before
                   deleting.
                 </>
@@ -167,10 +186,10 @@ export function BrandRowActions({ brand, onEdit }: BrandRowActionsProps) {
         <DeleteConfirmDialog
           open={unlinkOpen}
           onOpenChange={setUnlinkOpen}
-          title="Unlink products from brand?"
+          title="Unlink products from category?"
           description={
             <>
-              This will remove the brand assignment from{" "}
+              This will remove the category assignment from{" "}
               <span className="font-medium text-foreground">{linkedProductsCount}</span>{" "}
               linked product{linkedProductsCount === 1 ? "" : "s"}. The products will
               not be deleted.

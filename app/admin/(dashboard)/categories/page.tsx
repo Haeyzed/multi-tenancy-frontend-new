@@ -1,5 +1,5 @@
-import { TenantModulePlaceholder } from "@/components/tenant/module-placeholder"
+import { CategoriesPageContent } from "@/components/tenant/category/categories-page-content"
 
 export default function Page() {
-  return <TenantModulePlaceholder title="Categories" description="Product categories." />
+  return <CategoriesPageContent />
 }
