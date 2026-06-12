@@ -4,13 +4,13 @@ import type { Column, ColumnDef } from "@tanstack/react-table"
 import {
   CheckCircle2Icon,
   ExternalLinkIcon,
-  TagIcon,
   TextIcon,
   XCircleIcon,
 } from "lucide-react"
 import * as React from "react"
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { BrandLogoImage } from "@/components/tenant/brand/brand-logo-image"
 import { BrandRowActions } from "@/components/tenant/brand/brand-row-actions"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -58,18 +58,11 @@ export function getBrandColumns({
 
         return (
           <div className="flex items-center gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
-              {logoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={logoUrl}
-                  alt={row.original.name}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <TagIcon className="size-4 text-muted-foreground" />
-              )}
-            </div>
+            <BrandLogoImage
+              url={logoUrl}
+              alt={row.original.name}
+              variant="table"
+            />
             <div className="flex flex-col gap-0.5">
               <span className="font-medium">{row.getValue("name")}</span>
               {row.original.slug ? (

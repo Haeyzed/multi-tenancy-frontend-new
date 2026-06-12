@@ -11,6 +11,7 @@ import * as React from "react"
 
 import { DeleteConfirmDialog } from "@/components/central/delete-confirm-dialog"
 import { RecordViewDialog } from "@/components/central/record-view-dialog"
+import { BrandLogoImage } from "@/components/tenant/brand/brand-logo-image"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -40,7 +41,16 @@ function getBrandViewFields(brand: Brand) {
     { label: "Sort order", value: String(brand.sort_order) },
     {
       label: "Logo",
-      value: brand.logo_media?.url ? brand.logo_media.file_name : "—",
+      fullWidth: true,
+      value: brand.logo_media?.url ? (
+        <BrandLogoImage
+          url={brand.logo_media.url}
+          alt={brand.logo_media.file_name ?? brand.name}
+          variant="view"
+        />
+      ) : (
+        "—"
+      ),
     },
   ]
 }
