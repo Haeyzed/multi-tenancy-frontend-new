@@ -13,7 +13,8 @@ export interface OnboardPayload {
   plan_id: string
   billing_cycle: BillingCycle
   owner_email: string
-  owner_name: string
+  owner_first_name: string
+  owner_last_name: string
   owner_password: string
   payment_provider: PaymentProvider
   notes?: string

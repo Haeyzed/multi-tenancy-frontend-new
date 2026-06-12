@@ -37,7 +37,8 @@ interface OnboardFormState {
   name: string
   slug: string
   domain: string
-  ownerName: string
+  ownerFirstName: string
+  ownerLastName: string
   ownerEmail: string
   ownerPassword: string
   ownerPasswordConfirmation: string
@@ -75,7 +76,8 @@ export function OnboardForm({
     name: "",
     slug: "",
     domain: "",
-    ownerName: "",
+    ownerFirstName: "",
+    ownerLastName: "",
     ownerEmail: "",
     ownerPassword: "",
     ownerPasswordConfirmation: "",
@@ -168,7 +170,8 @@ export function OnboardForm({
         plan_id: form.planId,
         billing_cycle: form.billingCycle,
         owner_email: form.ownerEmail,
-        owner_name: form.ownerName,
+        owner_first_name: form.ownerFirstName.trim(),
+        owner_last_name: form.ownerLastName.trim(),
         owner_password: form.ownerPassword,
         payment_provider: form.paymentProvider,
         notes: form.notes.trim() || undefined,
@@ -263,29 +266,45 @@ export function OnboardForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
-            <FieldLabel htmlFor="onboarding-owner-name">Your name</FieldLabel>
+            <FieldLabel htmlFor="onboarding-owner-first-name">First name</FieldLabel>
             <Input
-              id="onboarding-owner-name"
-              value={form.ownerName}
-              onChange={(event) => updateField("ownerName", event.target.value)}
-              placeholder="Jane Doe"
+              id="onboarding-owner-first-name"
+              value={form.ownerFirstName}
+              onChange={(event) =>
+                updateField("ownerFirstName", event.target.value)
+              }
+              placeholder="Jane"
               required
               className="bg-background"
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="onboarding-owner-email">Work email</FieldLabel>
+            <FieldLabel htmlFor="onboarding-owner-last-name">Last name</FieldLabel>
             <Input
-              id="onboarding-owner-email"
-              type="email"
-              value={form.ownerEmail}
-              onChange={(event) => updateField("ownerEmail", event.target.value)}
-              placeholder="owner@acme.com"
+              id="onboarding-owner-last-name"
+              value={form.ownerLastName}
+              onChange={(event) =>
+                updateField("ownerLastName", event.target.value)
+              }
+              placeholder="Doe"
               required
               className="bg-background"
             />
           </Field>
         </div>
+
+        <Field>
+          <FieldLabel htmlFor="onboarding-owner-email">Work email</FieldLabel>
+          <Input
+            id="onboarding-owner-email"
+            type="email"
+            value={form.ownerEmail}
+            onChange={(event) => updateField("ownerEmail", event.target.value)}
+            placeholder="owner@acme.com"
+            required
+            className="bg-background"
+          />
+        </Field>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field>
