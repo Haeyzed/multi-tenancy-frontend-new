@@ -2,8 +2,6 @@
 
 import * as React from "react"
 
-import { CommandMenu } from "@/components/central/command-menu"
-
 type SearchContextValue = {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -11,7 +9,13 @@ type SearchContextValue = {
 
 const SearchContext = React.createContext<SearchContextValue | null>(null)
 
-export function SearchProvider({ children }: { children: React.ReactNode }) {
+export function SearchProvider({
+  children,
+  commandMenu = null,
+}: {
+  children: React.ReactNode
+  commandMenu?: React.ReactNode
+}) {
   const [open, setOpen] = React.useState(false)
 
   React.useEffect(() => {
@@ -31,7 +35,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   return (
     <SearchContext.Provider value={{ open, setOpen }}>
       {children}
-      <CommandMenu />
+      {commandMenu}
     </SearchContext.Provider>
   )
 }

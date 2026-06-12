@@ -5,6 +5,7 @@ import * as React from "react"
 import { ConfigDrawer } from "@/components/central/config-drawer"
 import { Search } from "@/components/central/search"
 import { TenantAppSidebar } from "@/components/tenant/app-sidebar"
+import { TenantCommandMenu } from "@/components/tenant/command-menu"
 import { Header } from "@/components/layout/header"
 import { Main } from "@/components/layout/main"
 import {
@@ -36,7 +37,7 @@ export function TenantDashboardShell({ children }: { children: React.ReactNode }
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={handleOpenChange}>
-      <SearchProvider>
+      <SearchProvider commandMenu={<TenantCommandMenu />}>
         <TenantAppSidebar
           variant={config.sidebarVariant}
           collapsible={sidebarCollapsible}

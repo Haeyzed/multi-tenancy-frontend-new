@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { AppSidebar } from "@/components/central/app-sidebar"
+import { CommandMenu } from "@/components/central/command-menu"
 import { ConfigDrawer } from "@/components/central/config-drawer"
 import { Search } from "@/components/central/search"
 import { Header } from "@/components/layout/header"
@@ -36,7 +37,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={handleOpenChange}>
-      <SearchProvider>
+      <SearchProvider commandMenu={<CommandMenu />}>
         <AppSidebar
           variant={config.sidebarVariant}
           collapsible={sidebarCollapsible}
