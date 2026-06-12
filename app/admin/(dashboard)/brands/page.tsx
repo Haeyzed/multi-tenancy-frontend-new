@@ -1,5 +1,5 @@
-import { TenantModulePlaceholder } from "@/components/tenant/module-placeholder"
+import { BrandsPageContent } from "@/components/tenant/brand/brands-page-content"
 
 export default function Page() {
-  return <TenantModulePlaceholder title="Brands" description="Product brands." />
+  return <BrandsPageContent />
 }

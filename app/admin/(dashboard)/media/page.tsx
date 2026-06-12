@@ -1,5 +1,5 @@
-import { TenantModulePlaceholder } from "@/components/tenant/module-placeholder"
+import { MediaPageContent } from "@/components/tenant/media/media-page-content"
 
 export default function Page() {
-  return <TenantModulePlaceholder title="Media library" description="Uploads and folders." />
+  return <MediaPageContent />
 }

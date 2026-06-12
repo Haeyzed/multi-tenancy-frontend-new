@@ -57,10 +57,10 @@ async function parseJson<T>(response: Response): Promise<T> {
   return JSON.parse(text) as T
 }
 
-export async function tenantApiRequest<T>(
+async function tenantFetch(
   path: string,
   options: TenantApiRequestOptions = {},
-): Promise<T> {
+): Promise<Response> {
   const {
     body,
     query,
@@ -74,7 +74,7 @@ export async function tenantApiRequest<T>(
   const requestHeaders = new Headers(headers)
   requestHeaders.set("Accept", "application/json")
 
-  if (body !== undefined) {
+  if (body !== undefined && !(body instanceof FormData)) {
     requestHeaders.set("Content-Type", "application/json")
   }
 
@@ -86,11 +86,23 @@ export async function tenantApiRequest<T>(
     }
   }
 
-  const response = await fetch(buildUrl(path, slug, query), {
+  return fetch(buildUrl(path, slug, query), {
     ...init,
     headers: requestHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body:
+      body === undefined
+        ? undefined
+        : body instanceof FormData
+          ? body
+          : JSON.stringify(body),
   })
+}
+
+export async function tenantApiRequest<T>(
+  path: string,
+  options: TenantApiRequestOptions = {},
+): Promise<T> {
+  const response = await tenantFetch(path, options)
 
   if (response.status === 204) {
     return undefined as T
@@ -109,37 +121,7 @@ export async function tenantApiRequestWithMessage<T>(
   path: string,
   options: TenantApiRequestOptions = {},
 ): Promise<{ data: T; message?: string }> {
-  const {
-    body,
-    query,
-    auth = true,
-    slug: explicitSlug,
-    headers,
-    ...init
-  } = options
-
-  const slug = resolveSlug(explicitSlug)
-  const requestHeaders = new Headers(headers)
-  requestHeaders.set("Accept", "application/json")
-
-  if (body !== undefined) {
-    requestHeaders.set("Content-Type", "application/json")
-  }
-
-  if (auth) {
-    const token = getAuthToken()
-
-    if (token) {
-      requestHeaders.set("Authorization", `Bearer ${token}`)
-    }
-  }
-
-  const response = await fetch(buildUrl(path, slug, query), {
-    ...init,
-    headers: requestHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  })
-
+  const response = await tenantFetch(path, options)
   const payload = await parseJson<ApiSuccessResponse<T> | ApiErrorResponse>(response)
 
   if (!response.ok || payload.success === false) {
@@ -158,37 +140,7 @@ export async function tenantApiPaginatedRequest<T>(
   path: string,
   options: TenantApiRequestOptions = {},
 ): Promise<ApiPaginatedResponse<T>> {
-  const {
-    body,
-    query,
-    auth = true,
-    slug: explicitSlug,
-    headers,
-    ...init
-  } = options
-
-  const slug = resolveSlug(explicitSlug)
-  const requestHeaders = new Headers(headers)
-  requestHeaders.set("Accept", "application/json")
-
-  if (body !== undefined) {
-    requestHeaders.set("Content-Type", "application/json")
-  }
-
-  if (auth) {
-    const token = getAuthToken()
-
-    if (token) {
-      requestHeaders.set("Authorization", `Bearer ${token}`)
-    }
-  }
-
-  const response = await fetch(buildUrl(path, slug, query), {
-    ...init,
-    headers: requestHeaders,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
-  })
-
+  const response = await tenantFetch(path, options)
   const payload = await parseJson<ApiPaginatedResponse<T> | ApiErrorResponse>(response)
 
   if (!response.ok || payload.success === false) {
@@ -205,11 +157,55 @@ export const tenantApiClient = {
     tenantApiRequest<T>(path, { ...options, method: "POST", body }),
   put: <T>(path: string, body?: unknown, options?: TenantApiRequestOptions) =>
     tenantApiRequest<T>(path, { ...options, method: "PUT", body }),
+  patch: <T>(path: string, body?: unknown, options?: TenantApiRequestOptions) =>
+    tenantApiRequest<T>(path, { ...options, method: "PATCH", body }),
   delete: <T>(path: string, options?: TenantApiRequestOptions) =>
     tenantApiRequest<T>(path, { ...options, method: "DELETE" }),
+  bulkDelete: <T>(
+    path: string,
+    ids: Array<string | number>,
+    options?: TenantApiRequestOptions,
+  ) =>
+    tenantApiRequest<T>(path, {
+      ...options,
+      method: "DELETE",
+      body: { ids },
+    }),
   postWithMessage: <T>(
     path: string,
     body?: unknown,
     options?: TenantApiRequestOptions,
   ) => tenantApiRequestWithMessage<T>(path, { ...options, method: "POST", body }),
+  putWithMessage: <T>(
+    path: string,
+    body?: unknown,
+    options?: TenantApiRequestOptions,
+  ) => tenantApiRequestWithMessage<T>(path, { ...options, method: "PUT", body }),
+  patchWithMessage: <T>(
+    path: string,
+    body?: unknown,
+    options?: TenantApiRequestOptions,
+  ) => tenantApiRequestWithMessage<T>(path, { ...options, method: "PATCH", body }),
+  deleteWithMessage: <T>(path: string, options?: TenantApiRequestOptions) =>
+    tenantApiRequestWithMessage<T>(path, { ...options, method: "DELETE" }),
+  bulkDeleteWithMessage: <T>(
+    path: string,
+    ids: Array<string | number>,
+    options?: TenantApiRequestOptions,
+  ) =>
+    tenantApiRequestWithMessage<T>(path, {
+      ...options,
+      method: "DELETE",
+      body: { ids },
+    }),
+  uploadWithMessage: <T>(
+    path: string,
+    formData: FormData,
+    options?: TenantApiRequestOptions,
+  ) =>
+    tenantApiRequestWithMessage<T>(path, {
+      ...options,
+      method: "POST",
+      body: formData,
+    }),
 }
