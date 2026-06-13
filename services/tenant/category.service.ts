@@ -5,6 +5,7 @@ import {
 import type {
   Category,
   CategoryBulkDeleteResponse,
+  CategoryBulkRestoreResponse,
   CategoryFormPayload,
   CategoryListParams,
   CategoryMetricsResponse,
@@ -17,7 +18,7 @@ export const categoryService = {
     return tenantApiPaginatedRequest<Category[]>("categories", { query: params })
   },
 
-  get(id: string) {
+  get(id: number) {
     return tenantApiClient.get<Category>(`categories/${id}`)
   },
 
@@ -33,28 +34,39 @@ export const categoryService = {
     return tenantApiClient.postWithMessage<Category>("categories", payload)
   },
 
-  update(id: string, payload: Partial<CategoryFormPayload>) {
+  update(id: number, payload: Partial<CategoryFormPayload>) {
     return tenantApiClient.putWithMessage<Category>(`categories/${id}`, payload)
   },
 
-  delete(id: string) {
+  delete(id: number) {
     return tenantApiClient.deleteWithMessage<void>(`categories/${id}`)
   },
 
-  bulkDelete(ids: string[]) {
+  bulkDelete(ids: number[]) {
     return tenantApiClient.bulkDeleteWithMessage<CategoryBulkDeleteResponse>(
       "categories/bulk",
       ids,
     )
   },
 
-  unlink(id: string) {
+  restore(id: number) {
+    return tenantApiClient.postWithMessage<Category>(`categories/${id}/restore`)
+  },
+
+  bulkRestore(ids: number[]) {
+    return tenantApiClient.postWithMessage<CategoryBulkRestoreResponse>(
+      "categories/bulk/restore",
+      { ids },
+    )
+  },
+
+  unlink(id: number) {
     return tenantApiClient.postWithMessage<CategoryUnlinkResponse>(
       `categories/${id}/unlink`,
     )
   },
 
-  bulkUnlink(ids: string[]) {
+  bulkUnlink(ids: number[]) {
     return tenantApiClient.postWithMessage<CategoryUnlinkResponse>(
       "categories/bulk/unlink",
       { ids },

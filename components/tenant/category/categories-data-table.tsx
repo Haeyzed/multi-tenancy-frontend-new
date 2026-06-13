@@ -45,10 +45,15 @@ export function CategoriesDataTable({ onEdit }: CategoriesDataTableProps) {
     "show_in_menu",
     parseAsArrayOf(parseAsString, FILTER_ARRAY_SEPARATOR).withDefault([]),
   )
+  const [trashed] = useQueryState(
+    "trashed",
+    parseAsArrayOf(parseAsString, FILTER_ARRAY_SEPARATOR).withDefault([]),
+  )
 
   const isActiveFilter = toCommaSeparatedFilter(isActive) ?? ""
   const isFeaturedFilter = toCommaSeparatedFilter(isFeatured) ?? ""
   const showInMenuFilter = toCommaSeparatedFilter(showInMenu) ?? ""
+  const trashedFilter = toCommaSeparatedFilter(trashed) ?? ""
 
   const categoriesQuery = useQuery({
     queryKey: tenantQueryKeys.categories.list({
@@ -58,6 +63,7 @@ export function CategoriesDataTable({ onEdit }: CategoriesDataTableProps) {
       isActive: isActiveFilter,
       isFeatured: isFeaturedFilter,
       showInMenu: showInMenuFilter,
+      trashed: trashedFilter,
     }),
     queryFn: () =>
       categoryService.getPaginated({
@@ -67,6 +73,7 @@ export function CategoriesDataTable({ onEdit }: CategoriesDataTableProps) {
         is_active: toCommaSeparatedFilter(isActive),
         is_featured: toCommaSeparatedFilter(isFeatured),
         show_in_menu: toCommaSeparatedFilter(showInMenu),
+        trashed: toCommaSeparatedFilter(trashed),
       }),
   })
 
@@ -80,14 +87,14 @@ export function CategoriesDataTable({ onEdit }: CategoriesDataTableProps) {
     initialState: {
       columnPinning: { left: ["select", "name"], right: ["actions"] },
     },
-    getRowId: (row) => row.id,
+    getRowId: (row) => String(row.id),
   })
 
   if (categoriesQuery.isLoading) {
     return (
       <DataTableSkeleton
         columnCount={columns.length}
-        filterCount={4}
+        filterCount={5}
         rowCount={perPage}
       />
     )

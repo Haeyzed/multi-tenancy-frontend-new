@@ -14,6 +14,7 @@ export const tenantQueryKeys = {
       perPage: number
       search: string
       isActive: string
+      trashed: string
     }) => [...tenantQueryKeys.brands.all, "list", params] as const,
     metrics: () => [...tenantQueryKeys.brands.all, "metrics"] as const,
     options: () => [...tenantQueryKeys.brands.all, "options"] as const,
@@ -28,10 +29,11 @@ export const tenantQueryKeys = {
       isActive: string
       isFeatured: string
       showInMenu: string
+      trashed: string
     }) => [...tenantQueryKeys.categories.all, "list", params] as const,
     metrics: () => [...tenantQueryKeys.categories.all, "metrics"] as const,
     options: () => [...tenantQueryKeys.categories.all, "options"] as const,
-    detail: (id: string) => [...tenantQueryKeys.categories.all, "detail", id] as const,
+    detail: (id: number) => [...tenantQueryKeys.categories.all, "detail", id] as const,
   },
   products: {
     all: ["tenant", "products"] as const,

@@ -37,8 +37,13 @@ export function BrandsDataTable({ onEdit }: BrandsDataTableProps) {
     "is_active",
     parseAsArrayOf(parseAsString, FILTER_ARRAY_SEPARATOR).withDefault([]),
   )
+  const [trashed] = useQueryState(
+    "trashed",
+    parseAsArrayOf(parseAsString, FILTER_ARRAY_SEPARATOR).withDefault([]),
+  )
 
   const isActiveFilter = toCommaSeparatedFilter(isActive) ?? ""
+  const trashedFilter = toCommaSeparatedFilter(trashed) ?? ""
 
   const brandsQuery = useQuery({
     queryKey: tenantQueryKeys.brands.list({
@@ -46,6 +51,7 @@ export function BrandsDataTable({ onEdit }: BrandsDataTableProps) {
       perPage,
       search,
       isActive: isActiveFilter,
+      trashed: trashedFilter,
     }),
     queryFn: () =>
       brandService.getPaginated({
@@ -53,6 +59,7 @@ export function BrandsDataTable({ onEdit }: BrandsDataTableProps) {
         per_page: perPage,
         search: search || undefined,
         is_active: toCommaSeparatedFilter(isActive),
+        trashed: toCommaSeparatedFilter(trashed),
       }),
   })
 
@@ -73,7 +80,7 @@ export function BrandsDataTable({ onEdit }: BrandsDataTableProps) {
     return (
       <DataTableSkeleton
         columnCount={columns.length}
-        filterCount={2}
+        filterCount={3}
         rowCount={perPage}
       />
     )

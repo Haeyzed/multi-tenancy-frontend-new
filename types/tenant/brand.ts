@@ -19,6 +19,7 @@ export interface Brand {
   products_count?: number
   created_at: string | null
   updated_at: string | null
+  deleted_at: string | null
   logo_media?: BrandLogoMedia | null
 }
 
@@ -37,6 +38,7 @@ export interface BrandListParams {
   per_page?: number
   search?: string
   is_active?: string
+  trashed?: string
 }
 
 export interface BrandOption {
@@ -50,6 +52,10 @@ export interface BrandMetricsResponse {
 
 export interface BrandBulkDeleteResponse {
   deleted: number
+}
+
+export interface BrandBulkRestoreResponse {
+  restored: number
 }
 
 export interface BrandUnlinkResponse {

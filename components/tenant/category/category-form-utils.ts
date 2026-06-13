@@ -60,7 +60,7 @@ export function formStateFromCategory(category: Category | null): CategoryFormSt
     const defaults = getDefaultCategoryFormValues()
 
     return {
-      parentId: defaults.parent_id ?? "",
+      parentId: defaults.parent_id != null ? String(defaults.parent_id) : "",
       name: defaults.name,
       slug: defaults.slug,
       description: defaults.description ?? "",
@@ -80,7 +80,7 @@ export function formStateFromCategory(category: Category | null): CategoryFormSt
   const payload = categoryToFormPayload(category)
 
   return {
-    parentId: payload.parent_id ?? "",
+    parentId: payload.parent_id != null ? String(payload.parent_id) : "",
     name: payload.name,
     slug: payload.slug,
     description: payload.description ?? "",
@@ -99,7 +99,7 @@ export function formStateFromCategory(category: Category | null): CategoryFormSt
 
 export function formStateToPayload(state: CategoryFormState): CategoryFormPayload {
   return {
-    parent_id: state.parentId || null,
+    parent_id: state.parentId ? Number(state.parentId) : null,
     name: state.name.trim(),
     slug: state.slug.trim(),
     description: state.description.trim() || null,

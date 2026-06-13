@@ -2,7 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query"
 import type { Table } from "@tanstack/react-table"
-import { Link2OffIcon, Trash2Icon, XIcon } from "lucide-react"
+import { Link2OffIcon, RotateCcwIcon, Trash2Icon, XIcon } from "lucide-react"
 import * as React from "react"
 
 import { DeleteConfirmDialog } from "@/components/central/delete-confirm-dialog"
@@ -29,11 +29,14 @@ export function BrandActionBar({ table }: BrandActionBarProps) {
   const queryClient = useQueryClient()
   const { can } = useTenantPermissions()
   const [deleteOpen, setDeleteOpen] = React.useState(false)
+  const [restoreOpen, setRestoreOpen] = React.useState(false)
   const [unlinkOpen, setUnlinkOpen] = React.useState(false)
 
   const rows = table.getFilteredSelectedRowModel().rows
-  const canDelete = can(TenantPermissions.catalog.manage)
-  const linkedRows = rows.filter((row) => (row.original.products_count ?? 0) > 0)
+  const canManage = can(TenantPermissions.catalog.manage)
+  const trashedRows = rows.filter((row) => row.original.deleted_at)
+  const activeRows = rows.filter((row) => !row.original.deleted_at)
+  const linkedRows = activeRows.filter((row) => (row.original.products_count ?? 0) > 0)
   const linkedProductCount = linkedRows.reduce(
     (total, row) => total + (row.original.products_count ?? 0),
     0,
@@ -49,9 +52,17 @@ export function BrandActionBar({ table }: BrandActionBarProps) {
   )
 
   async function handleBulkDelete() {
-    const ids = rows.map((row) => row.original.id)
+    const ids = activeRows.map((row) => row.original.id)
     const result = await brandService.bulkDelete(ids)
     toastApiMessage(result.message, "Selected brands deleted successfully.")
+    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.brands.all })
+    table.toggleAllRowsSelected(false)
+  }
+
+  async function handleBulkRestore() {
+    const ids = trashedRows.map((row) => row.original.id)
+    const result = await brandService.bulkRestore(ids)
+    toastApiMessage(result.message, "Selected brands restored successfully.")
     await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.brands.all })
     table.toggleAllRowsSelected(false)
   }
@@ -74,7 +85,18 @@ export function BrandActionBar({ table }: BrandActionBarProps) {
           <ActionBarItem onClick={() => table.toggleAllRowsSelected(false)}>
             Clear selection
           </ActionBarItem>
-          {canDelete && linkedRows.length > 0 ? (
+          {canManage && trashedRows.length > 0 ? (
+            <ActionBarItem
+              onSelect={(event) => {
+                event.preventDefault()
+                setRestoreOpen(true)
+              }}
+            >
+              <RotateCcwIcon />
+              Restore
+            </ActionBarItem>
+          ) : null}
+          {canManage && linkedRows.length > 0 ? (
             <ActionBarItem
               onSelect={(event) => {
                 event.preventDefault()
@@ -85,7 +107,7 @@ export function BrandActionBar({ table }: BrandActionBarProps) {
               Unlink products
             </ActionBarItem>
           ) : null}
-          {canDelete ? (
+          {canManage && activeRows.length > 0 ? (
             <ActionBarItem
               variant="destructive"
               onSelect={(event) => {
@@ -103,25 +125,41 @@ export function BrandActionBar({ table }: BrandActionBarProps) {
         </ActionBarGroup>
       </ActionBar>
 
-      {canDelete ? (
+      {canManage && activeRows.length > 0 ? (
         <DeleteConfirmDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
           title="Delete brands?"
           description={
             <>
-              This will permanently delete{" "}
-              <span className="font-medium text-foreground">{rows.length}</span>{" "}
-              selected brand{rows.length === 1 ? "" : "s"}. This action cannot be
-              undone.
+              This will move{" "}
+              <span className="font-medium text-foreground">{activeRows.length}</span>{" "}
+              selected brand{activeRows.length === 1 ? "" : "s"} to the trash.
             </>
           }
           onConfirm={handleBulkDelete}
-          confirmLabel={`Delete ${rows.length}`}
+          confirmLabel={`Delete ${activeRows.length}`}
         />
       ) : null}
 
-      {canDelete && linkedRows.length > 0 ? (
+      {canManage && trashedRows.length > 0 ? (
+        <DeleteConfirmDialog
+          open={restoreOpen}
+          onOpenChange={setRestoreOpen}
+          title="Restore brands?"
+          description={
+            <>
+              This will restore{" "}
+              <span className="font-medium text-foreground">{trashedRows.length}</span>{" "}
+              selected brand{trashedRows.length === 1 ? "" : "s"}.
+            </>
+          }
+          onConfirm={handleBulkRestore}
+          confirmLabel={`Restore ${trashedRows.length}`}
+        />
+      ) : null}
+
+      {canManage && linkedRows.length > 0 ? (
         <DeleteConfirmDialog
           open={unlinkOpen}
           onOpenChange={setUnlinkOpen}

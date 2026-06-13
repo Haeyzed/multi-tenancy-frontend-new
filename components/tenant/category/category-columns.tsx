@@ -16,7 +16,7 @@ import { CategoryRowActions } from "@/components/tenant/category/category-row-ac
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { getSelectAllCheckboxProps } from "@/lib/data-table/checkbox-utils"
-import { activeInactiveFilterOptions } from "@/lib/data-table/status-options"
+import { activeInactiveFilterOptions, trashedFilterOptions } from "@/lib/data-table/status-options"
 import type { Category } from "@/types/tenant/category"
 
 interface GetCategoryColumnsOptions {
@@ -76,7 +76,12 @@ export function getCategoryColumns({
               variant="table"
             />
             <div className="flex flex-col gap-0.5">
-              <span className="font-medium">{row.getValue("name")}</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{row.getValue("name")}</span>
+                {row.original.deleted_at ? (
+                  <Badge variant="secondary">Trashed</Badge>
+                ) : null}
+              </div>
               {row.original.slug ? (
                 <span className="font-mono text-xs text-muted-foreground">
                   {row.original.slug}
@@ -198,6 +203,20 @@ export function getCategoryColumns({
         options: [...menuFilterOptions],
       },
       enableColumnFilter: true,
+    },
+    {
+      id: "trashed",
+      accessorFn: (row) => (row.deleted_at ? "only" : "without"),
+      header: () => null,
+      cell: () => null,
+      meta: {
+        label: "Trash",
+        variant: "multiSelect",
+        options: [...trashedFilterOptions],
+      },
+      enableColumnFilter: true,
+      enableHiding: false,
+      size: 0,
     },
     {
       id: "actions",

@@ -5,6 +5,7 @@ import {
 import type {
   Brand,
   BrandBulkDeleteResponse,
+  BrandBulkRestoreResponse,
   BrandFormPayload,
   BrandListParams,
   BrandMetricsResponse,
@@ -45,6 +46,17 @@ export const brandService = {
     return tenantApiClient.bulkDeleteWithMessage<BrandBulkDeleteResponse>(
       "brands/bulk",
       ids,
+    )
+  },
+
+  restore(id: number) {
+    return tenantApiClient.postWithMessage<Brand>(`brands/${id}/restore`)
+  },
+
+  bulkRestore(ids: number[]) {
+    return tenantApiClient.postWithMessage<BrandBulkRestoreResponse>(
+      "brands/bulk/restore",
+      { ids },
     )
   },
 

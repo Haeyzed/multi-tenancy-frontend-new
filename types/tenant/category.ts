@@ -8,8 +8,8 @@ export interface CategoryMedia {
 }
 
 export interface Category {
-  id: string
-  parent_id: string | null
+  id: number
+  parent_id: number | null
   name: string
   slug: string
   description: string | null
@@ -27,13 +27,14 @@ export interface Category {
   products_count?: number
   created_at: string | null
   updated_at: string | null
+  deleted_at: string | null
   parent?: Category | null
   banner_media?: CategoryMedia | null
   icon_media?: CategoryMedia | null
 }
 
 export interface CategoryFormPayload {
-  parent_id?: string | null
+  parent_id?: number | null
   name: string
   slug: string
   description?: string | null
@@ -52,10 +53,11 @@ export interface CategoryListParams {
   is_active?: string
   is_featured?: string
   show_in_menu?: string
+  trashed?: string
 }
 
 export interface CategoryOption {
-  value: string
+  value: number
   label: string
 }
 
@@ -65,6 +67,10 @@ export interface CategoryMetricsResponse {
 
 export interface CategoryBulkDeleteResponse {
   deleted: number
+}
+
+export interface CategoryBulkRestoreResponse {
+  restored: number
 }
 
 export interface CategoryUnlinkResponse {

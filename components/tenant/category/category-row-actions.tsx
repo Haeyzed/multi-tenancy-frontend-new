@@ -6,6 +6,7 @@ import {
   Link2OffIcon,
   MoreHorizontalIcon,
   PencilIcon,
+  RotateCcwIcon,
   Trash2Icon,
 } from "lucide-react"
 import * as React from "react"
@@ -39,6 +40,7 @@ function getCategoryViewFields(category: Category) {
     { label: "Parent", value: category.parent?.name ?? "Root" },
     { label: "Description", value: category.description ?? "—" },
     { label: "Status", value: category.is_active ? "Active" : "Inactive" },
+    { label: "Trashed", value: category.deleted_at ? "Yes" : "No" },
     { label: "Featured", value: category.is_featured ? "Yes" : "No" },
     { label: "In menu", value: category.show_in_menu ? "Yes" : "No" },
     { label: "Sort order", value: String(category.sort_order) },
@@ -81,16 +83,24 @@ export function CategoryRowActions({ category, onEdit }: CategoryRowActionsProps
   const { can } = useTenantPermissions()
   const [viewOpen, setViewOpen] = React.useState(false)
   const [deleteOpen, setDeleteOpen] = React.useState(false)
+  const [restoreOpen, setRestoreOpen] = React.useState(false)
   const [unlinkOpen, setUnlinkOpen] = React.useState(false)
 
   const canView = can(TenantPermissions.catalog.view)
   const canManage = can(TenantPermissions.catalog.manage)
+  const isTrashed = Boolean(category.deleted_at)
   const linkedProductsCount = category.products_count ?? 0
   const hasLinkedProducts = linkedProductsCount > 0
 
   async function handleDelete() {
     const result = await categoryService.delete(category.id)
     toastApiMessage(result.message, "Category deleted successfully.")
+    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.categories.all })
+  }
+
+  async function handleRestore() {
+    const result = await categoryService.restore(category.id)
+    toastApiMessage(result.message, "Category restored successfully.")
     await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.categories.all })
   }
 
@@ -123,19 +133,25 @@ export function CategoryRowActions({ category, onEdit }: CategoryRowActionsProps
               View
             </DropdownMenuItem>
           ) : null}
-          {canManage ? (
+          {canManage && !isTrashed ? (
             <DropdownMenuItem onClick={() => onEdit(category)}>
               <PencilIcon />
               Edit category
             </DropdownMenuItem>
           ) : null}
-          {canManage && hasLinkedProducts ? (
+          {canManage && !isTrashed && hasLinkedProducts ? (
             <DropdownMenuItem onClick={() => setUnlinkOpen(true)}>
               <Link2OffIcon />
               Unlink products
             </DropdownMenuItem>
           ) : null}
-          {canManage ? (
+          {canManage && isTrashed ? (
+            <DropdownMenuItem onClick={() => setRestoreOpen(true)}>
+              <RotateCcwIcon />
+              Restore
+            </DropdownMenuItem>
+          ) : null}
+          {canManage && !isTrashed ? (
             <DropdownMenuItem
               variant="destructive"
               onClick={() => setDeleteOpen(true)}
@@ -157,15 +173,16 @@ export function CategoryRowActions({ category, onEdit }: CategoryRowActionsProps
         />
       ) : null}
 
-      {canManage ? (
+      {canManage && !isTrashed ? (
         <DeleteConfirmDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
           title="Delete category?"
           description={
             <>
-              This will permanently delete{" "}
-              <span className="font-medium text-foreground">{category.name}</span>.
+              This will move{" "}
+              <span className="font-medium text-foreground">{category.name}</span> to the
+              trash.
               {hasLinkedProducts ? (
                 <>
                   {" "}
@@ -173,16 +190,30 @@ export function CategoryRowActions({ category, onEdit }: CategoryRowActionsProps
                   {linkedProductsCount === 1 ? "" : "s"}. Unlink products before
                   deleting.
                 </>
-              ) : (
-                " This action cannot be undone."
-              )}
+              ) : null}
             </>
           }
           onConfirm={handleDelete}
         />
       ) : null}
 
-      {canManage && hasLinkedProducts ? (
+      {canManage && isTrashed ? (
+        <DeleteConfirmDialog
+          open={restoreOpen}
+          onOpenChange={setRestoreOpen}
+          title="Restore category?"
+          description={
+            <>
+              This will restore{" "}
+              <span className="font-medium text-foreground">{category.name}</span>.
+            </>
+          }
+          onConfirm={handleRestore}
+          confirmLabel="Restore"
+        />
+      ) : null}
+
+      {canManage && !isTrashed && hasLinkedProducts ? (
         <DeleteConfirmDialog
           open={unlinkOpen}
           onOpenChange={setUnlinkOpen}

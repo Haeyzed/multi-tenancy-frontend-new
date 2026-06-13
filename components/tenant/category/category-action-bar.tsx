@@ -2,7 +2,7 @@
 
 import { useQueryClient } from "@tanstack/react-query"
 import type { Table } from "@tanstack/react-table"
-import { Link2OffIcon, Trash2Icon, XIcon } from "lucide-react"
+import { Link2OffIcon, RotateCcwIcon, Trash2Icon, XIcon } from "lucide-react"
 import * as React from "react"
 
 import { DeleteConfirmDialog } from "@/components/central/delete-confirm-dialog"
@@ -29,11 +29,14 @@ export function CategoryActionBar({ table }: CategoryActionBarProps) {
   const queryClient = useQueryClient()
   const { can } = useTenantPermissions()
   const [deleteOpen, setDeleteOpen] = React.useState(false)
+  const [restoreOpen, setRestoreOpen] = React.useState(false)
   const [unlinkOpen, setUnlinkOpen] = React.useState(false)
 
   const rows = table.getFilteredSelectedRowModel().rows
-  const canDelete = can(TenantPermissions.catalog.manage)
-  const linkedRows = rows.filter((row) => (row.original.products_count ?? 0) > 0)
+  const canManage = can(TenantPermissions.catalog.manage)
+  const trashedRows = rows.filter((row) => row.original.deleted_at)
+  const activeRows = rows.filter((row) => !row.original.deleted_at)
+  const linkedRows = activeRows.filter((row) => (row.original.products_count ?? 0) > 0)
   const linkedProductCount = linkedRows.reduce(
     (total, row) => total + (row.original.products_count ?? 0),
     0,
@@ -49,9 +52,17 @@ export function CategoryActionBar({ table }: CategoryActionBarProps) {
   )
 
   async function handleBulkDelete() {
-    const ids = rows.map((row) => row.original.id)
+    const ids = activeRows.map((row) => row.original.id)
     const result = await categoryService.bulkDelete(ids)
     toastApiMessage(result.message, "Selected categories deleted successfully.")
+    await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.categories.all })
+    table.toggleAllRowsSelected(false)
+  }
+
+  async function handleBulkRestore() {
+    const ids = trashedRows.map((row) => row.original.id)
+    const result = await categoryService.bulkRestore(ids)
+    toastApiMessage(result.message, "Selected categories restored successfully.")
     await queryClient.invalidateQueries({ queryKey: tenantQueryKeys.categories.all })
     table.toggleAllRowsSelected(false)
   }
@@ -77,7 +88,18 @@ export function CategoryActionBar({ table }: CategoryActionBarProps) {
           <ActionBarItem onClick={() => table.toggleAllRowsSelected(false)}>
             Clear selection
           </ActionBarItem>
-          {canDelete && linkedRows.length > 0 ? (
+          {canManage && trashedRows.length > 0 ? (
+            <ActionBarItem
+              onSelect={(event) => {
+                event.preventDefault()
+                setRestoreOpen(true)
+              }}
+            >
+              <RotateCcwIcon />
+              Restore
+            </ActionBarItem>
+          ) : null}
+          {canManage && linkedRows.length > 0 ? (
             <ActionBarItem
               onSelect={(event) => {
                 event.preventDefault()
@@ -88,7 +110,7 @@ export function CategoryActionBar({ table }: CategoryActionBarProps) {
               Unlink products
             </ActionBarItem>
           ) : null}
-          {canDelete ? (
+          {canManage && activeRows.length > 0 ? (
             <ActionBarItem
               variant="destructive"
               onSelect={(event) => {
@@ -106,25 +128,41 @@ export function CategoryActionBar({ table }: CategoryActionBarProps) {
         </ActionBarGroup>
       </ActionBar>
 
-      {canDelete ? (
+      {canManage && activeRows.length > 0 ? (
         <DeleteConfirmDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
           title="Delete categories?"
           description={
             <>
-              This will permanently delete{" "}
-              <span className="font-medium text-foreground">{rows.length}</span>{" "}
-              selected categor{rows.length === 1 ? "y" : "ies"}. This action cannot be
-              undone.
+              This will move{" "}
+              <span className="font-medium text-foreground">{activeRows.length}</span>{" "}
+              selected categor{activeRows.length === 1 ? "y" : "ies"} to the trash.
             </>
           }
           onConfirm={handleBulkDelete}
-          confirmLabel={`Delete ${rows.length}`}
+          confirmLabel={`Delete ${activeRows.length}`}
         />
       ) : null}
 
-      {canDelete && linkedRows.length > 0 ? (
+      {canManage && trashedRows.length > 0 ? (
+        <DeleteConfirmDialog
+          open={restoreOpen}
+          onOpenChange={setRestoreOpen}
+          title="Restore categories?"
+          description={
+            <>
+              This will restore{" "}
+              <span className="font-medium text-foreground">{trashedRows.length}</span>{" "}
+              selected categor{trashedRows.length === 1 ? "y" : "ies"}.
+            </>
+          }
+          onConfirm={handleBulkRestore}
+          confirmLabel={`Restore ${trashedRows.length}`}
+        />
+      ) : null}
+
+      {canManage && linkedRows.length > 0 ? (
         <DeleteConfirmDialog
           open={unlinkOpen}
           onOpenChange={setUnlinkOpen}
